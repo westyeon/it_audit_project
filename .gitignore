@@ -1,0 +1,27 @@
+# ─── 민감 정보 ───────────────────────────────
+.env
+
+# ─── 대용량 생성 파일 (generate_virtual_db.py로 재생성 가능) ───
+data/raw/virtual_db/access_log.csv
+data/processed/virtual_db/access_log.csv
+
+# ─── Python 캐시 ─────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# ─── 가상환경 ────────────────────────────────
+venv/
+.venv/
+env/
+
+# ─── Jupyter 체크포인트 ──────────────────────
+.ipynb_checkpoints/
+
+# ─── macOS ───────────────────────────────────
+.DS_Store
+
+# ─── IDE ─────────────────────────────────────
+.vscode/settings.json
+.idea/
