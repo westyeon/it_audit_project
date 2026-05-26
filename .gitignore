@@ -24,3 +24,4 @@ env/
 # ─── IDE ─────────────────────────────────────
 .vscode/settings.json
 .idea/
+data/processed/report/
