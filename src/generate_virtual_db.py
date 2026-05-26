@@ -26,11 +26,11 @@ TOTAL_EMP      = 500
 RESIGNED_COUNT = 80   # 퇴사자 수 (전체의 16%)
 
 SYSTEMS = {
-    'CORE':  '핵심뱅킹시스템',
-    'IBANK': '인터넷뱅킹',
-    'ADMIN': '내부관리시스템',
-    'INFO':  '정보계시스템',
-    'DEVP':  '개발포털',
+    'CRED':   '신용평가시스템',
+    'PORTAL': '고객포털',
+    'ERP':    '경영관리시스템',
+    'DW':     '데이터웨어하우스',
+    'DEVP':   '개발포털',
 }
 
 # (부서코드, 부서명, role_type, 인원비중)
@@ -197,10 +197,10 @@ def gen_sys_account(emp_df: pd.DataFrame) -> pd.DataFrame:
 
     # role별 접근 가능 시스템
     ROLE_SYSTEMS = {
-        'developer': ['CORE', 'DEVP', 'INFO'],
-        'operator':  ['CORE', 'IBANK', 'ADMIN', 'INFO', 'DEVP'],
-        'security':  ['CORE', 'ADMIN', 'INFO'],
-        'business':  ['IBANK', 'ADMIN'],
+        'developer': ['CRED', 'DEVP', 'DW'],
+        'operator':  ['CRED', 'PORTAL', 'ERP', 'DW', 'DEVP'],
+        'security':  ['CRED', 'ERP', 'DW'],
+        'business':  ['PORTAL', 'ERP'],
     }
 
     rows = []
