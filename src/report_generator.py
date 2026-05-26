@@ -16,7 +16,7 @@ from datetime import datetime
 from dotenv import dotenv_values
 
 # ── 경로 설정 ────────────────────────────────────────────────
-BASE_DIR   = "/Users/kwakseoyeon/Documents/it_audit_project"
+BASE_DIR   = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SUMMARY_PATH = f"{BASE_DIR}/data/processed/violations_summary.csv"
 OUT_DIR    = f"{BASE_DIR}/data/processed/report"
 
