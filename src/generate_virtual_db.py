@@ -58,13 +58,13 @@ POSITION_BY_GRADE = {
     '차장': '파트장', '부장': '팀장'
 }
 
-# 입사년도 분포 (2015~2024, 합계 500)
-HIRE_YEARS         = list(range(2015, 2025))
+# 입사년도 분포 (2016~2025, 합계 500)
+HIRE_YEARS         = list(range(2016, 2026))
 HIRE_YEAR_COUNTS   = [30, 40, 50, 55, 60, 55, 60, 55, 55, 40]
 
-# 로그 기간 (6개월)
-LOG_START = datetime(2024, 11, 1)
-LOG_END   = datetime(2025,  4, 30)
+# 로그 기간 (6개월) - 2025년 11월 ~ 2026년 4월
+LOG_START = datetime(2025, 11, 1)
+LOG_END   = datetime(2026,  4, 30)
 
 # ══════════════════════════════════════════════
 # 위반 건수 설정 (Rule 엔진 검증 기준값)
@@ -172,13 +172,13 @@ def gen_emp_master() -> pd.DataFrame:
     df = pd.DataFrame(rows)
 
     # 퇴사자 80명 설정 (입사 1년 이상 된 직원 중 랜덤)
-    eligible = df[df['hire_dt'] <= date(2023, 12, 31)].index.tolist()
+    eligible = df[df['hire_dt'] <= date(2024, 12, 31)].index.tolist()
     resigned_idx = random.sample(eligible, RESIGNED_COUNT)
     for idx in resigned_idx:
         hire = df.at[idx, 'hire_dt']
         resign = rand_date(
-            max(hire + timedelta(days=365), date(2022, 1, 1)),
-            date(2025, 3, 31)
+            max(hire + timedelta(days=365), date(2023, 1, 1)),
+            date(2026, 3, 31)
         )
         df.at[idx, 'resign_dt']   = resign
         df.at[idx, 'yn_employed'] = 'N'
@@ -213,7 +213,7 @@ def gen_sys_account(emp_df: pd.DataFrame) -> pd.DataFrame:
             create_dt = emp['hire_dt'] + timedelta(days=random.randint(3, 7))
 
             # 권한 검토일: 최근 1~5개월 내 랜덤 (정상 케이스 → 180일 미초과)
-            review_dt = rand_date(date(2024, 12, 1), date(2025, 4, 15))
+            review_dt = rand_date(date(2025, 12, 1), date(2026, 4, 15))
 
             # 계정 상태: 퇴사자는 기본 inactive (위반 케이스는 나중에 덮어씀)
             if emp['yn_employed'] == 'N':
@@ -237,7 +237,7 @@ def gen_sys_account(emp_df: pd.DataFrame) -> pd.DataFrame:
                 'account_status':   status,
                 'permission_level': perm,
                 'create_dt':        create_dt,
-                'last_pw_change_dt': rand_date(date(2024, 1, 1), date(2025, 4, 30)),
+                'last_pw_change_dt': rand_date(date(2025, 1, 1), date(2026, 4, 30)),
                 'last_review_dt':   review_dt,
             })
             seq += 1
@@ -251,11 +251,11 @@ def gen_sys_account(emp_df: pd.DataFrame) -> pd.DataFrame:
         n=V['resigned_active_accounts'], random_state=42).index
     df.loc[v1_targets, 'account_status'] = 'active'
 
-    # (2) 권한검토 6개월 초과: last_review_dt를 2024-04-30 이전으로 설정
+    # (2) 권한검토 6개월 초과: last_review_dt를 2025-04-30 이전으로 설정
     active_idx = df[df['account_status'] == 'active'].sample(
         n=V['overdue_review_accounts'], random_state=42).index
     df.loc[active_idx, 'last_review_dt'] = [
-        rand_date(date(2023, 1, 1), date(2024, 4, 30))
+        rand_date(date(2024, 1, 1), date(2025, 4, 30))
         for _ in range(V['overdue_review_accounts'])
     ]
 

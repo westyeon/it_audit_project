@@ -14,7 +14,7 @@ from datetime import datetime
 
 RAW_DIR  = "data/raw/virtual_db"
 OUT_DIR  = "data/processed/virtual_db"
-BASE_DT  = datetime(2025, 4, 30)   # 분석 기준일 (로그 수집 종료일)
+BASE_DT  = datetime(2026, 4, 30)   # 분석 기준일 (로그 수집 종료일)
 REVIEW_THRESHOLD_DAYS = 180         # 권한검토 주기 기준 (6개월)
 AFTER_HOURS_START     = 22          # 업무시간 외 시작 시각 (22시)
 AFTER_HOURS_END       = 6           # 업무시간 외 종료 시각 (06시)
