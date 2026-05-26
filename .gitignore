@@ -1,9 +1,8 @@
 # ─── 민감 정보 ───────────────────────────────
 .env
 
-# ─── 대용량 생성 파일 (generate_virtual_db.py로 재생성 가능) ───
-data/raw/virtual_db/access_log.csv
-data/processed/virtual_db/access_log.csv
+# ─── 대용량 생성 파일 ───────────────────────────
+# access_log.csv는 20MB로 GitHub 업로드 허용 범위 내 포함
 
 # ─── Python 캐시 ─────────────────────────────
 __pycache__/
