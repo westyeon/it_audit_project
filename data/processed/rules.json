@@ -293,7 +293,7 @@
     "source_article": "정보보호시스템 원격관리 금지, 불가피시 전용회선 및 접근통제 대책 수립 필요",
     "check_target": "access_log",
     "condition_desc": "보안시스템(SECUR role) 관리자가 외부IP(사내IP 대역 외)에서 접속한 경우",
-    "pandas_logic": "secur_emp = df_emp[df_emp['role_type'] == 'SECUR']['emp_id'].tolist()\ninternal_ip_prefix = ('10.', '192.168.', '172.16.')\nsecur_access = df_access[df_access['emp_id'].isin(secur_emp)]\nviolation_count = len(secur_access[~secur_access['src_ip'].str.startswith(internal_ip_prefix, na=False)])",
+    "pandas_logic": "secur_emp = df_emp[df_emp['role_type'] == 'security']['emp_id'].tolist()\ninternal_ip_prefix = ('10.', '192.168.', '172.16.')\nsecur_access = df_access[df_access['emp_id'].isin(secur_emp)]\nviolation_count = len(secur_access[~secur_access['src_ip'].str.startswith(internal_ip_prefix, na=False)])",
     "severity": "HIGH",
     "remediation": "원격관리 차단 또는 전용회선/VPN 접근통제 대책 수립",
     "source_article_full": "서비스를 방해하는 행위로부터 정보 등을 보호하기 위한 장비 및 프로그램을 말한다. 7. “해킹”이라 함은 접근을 허가받지 아니하고 전자금융기반시설에 불법적으로 침투하거나 허가받지 아니한 권한을 불법적으로 갖는 행위 또는 전자금융기반시설을 공격하거나 해를 끼치는 행위를 말한다. 8. “컴퓨터악성코드”(이하 “악성코드”라 한다)라 함은 컴퓨터에서 이용자의 허락 없이 스스로를 복사하거나 변형한 뒤 정보유출, 시스템 파괴 등의 작업을 수행하여 이용자에게 피해를 주는 프로그램을 말한다. 9. “공개용 웹서버”라 함은 인터넷 이용자들이 웹페이지를 자유롭게 보고 웹서비스(월드 와이드 웹을 이용한 서비스를 말한다)를 이용할 수 있게 해주는 프로그램이 실행되는 장치를 말한다. 10. “정보통신망”(이하 “통신망”이라 한다)이라 함은 유ㆍ무선, 광선 등 정보통신 수단에 의하여 부호ㆍ문자ㆍ음향 ㆍ영상 등을 처리ㆍ저장 및 송ㆍ수신할 수 있는 정보통신 조직형태를 말한다. 시행세칙 제2조(정의) 이 세칙에서 별도로 정하지 아니한 용어는 법ㆍ시행령ㆍ규정에서 정하는 바에 따른다. 전자금융거래법 및 시행령에서 별도로 정의하지 않은 용어에 대해 정의를 규정 용어별 해설 ● 전산실 : 전산장"
@@ -423,7 +423,7 @@
     "source_article": "연구개발 목적 외 SaaS 등은 연구개발망에서 접근 불가",
     "check_target": "access_log",
     "condition_desc": "연구개발망(DEVP 시스템)에서 업무시간 외 또는 개발 역할이 아닌 직원의 비정상 접근 패턴 탐지",
-    "pandas_logic": "df_access_dev = df_access.merge(df_emp[['emp_id','role_type']], on='emp_id')\nlen(df_access_dev[(df_access_dev['system_cd']=='DEVP') & (df_access_dev['role_type']!='DEV') & (df_access_dev['result_cd']=='SUCCESS')])",
+    "pandas_logic": "df_access_dev = df_access.merge(df_emp[['emp_id','role_type']], on='emp_id')\nlen(df_access_dev[(df_access_dev['system_cd']=='DEVP') & (df_access_dev['role_type']!='developer') & (df_access_dev['result_cd']=='SUCCESS')])",
     "severity": "MEDIUM",
     "remediation": "비개발 인력의 연구개발망 접근 권한 회수 및 접근통제 강화",
     "source_article_full": "･ 프로그램 개발 등 금융서비스의 연구 개발을 할 수 있도록 금융회사 등의 내부업무망, 전산실, 외부망으로부터 독립적으로 구성된 망 ･ 구분 내부업무망(3호망) 전산실(5호망) 연구 개발망 인터넷망 인터넷 등 외부 통신망과 인터넷 등 외부 통신망과 물리적 망분리 예외 적용시 인터넷 규제 내용 인터넷 접속 허용 ･ 분리 차단 및 접속금지 분리(물리적 망분리) 접속 허용 문서 작성, 인트라넷 접속, 개발(코딩, 테스트) 및 AI, 인터넷 검색, 수행 업무 운영, 개발, 보안 관련 업무 민원 등 사무 업무 SaaS 활용을 위한 연구ㆍ개발 e-mail 확인 등 금융감독원"
@@ -553,7 +553,7 @@
     "source_article": "제8조의2 정보보호위원회 설치 운영 의무",
     "check_target": "emp_master",
     "condition_desc": "정보보호최고책임자(SECUR) 역할 재직자 존재 여부로 위원회 운영 간접 점검",
-    "pandas_logic": "df_secur = df_emp[(df_emp['role_type'] == 'SECUR') & (df_emp['yn_employed'] == 'Y')]\nviolation_count = 1 if len(df_secur) == 0 else 0",
+    "pandas_logic": "df_secur = df_emp[(df_emp['role_type'] == 'security') & (df_emp['yn_employed'] == 'Y')]\nviolation_count = 1 if len(df_secur) == 0 else 0",
     "severity": "HIGH",
     "remediation": "정보보호최고책임자 지정 및 정보보호위원회 구성 운영",
     "source_article_full": "제8조의2(정보보호위원회 운영) ① 금융회사 또는 전자금융업자는 중요 정보보호에 관한 사항을 심의ㆍ의결하는 정보보호위원회를 설치 운영하여야 한다.\n  ② 정보보호위원회의 장은 정보보호최고책임자로 하며, 위원은 정보보호업무 관련 부서장, 전산운영 및 개발 관련 부서장, 준법업무 관련 부서의 장 등으로 구성한다.\n  ③ 정보보호위원회는 다음 각 호의 사항을 심의ㆍ의결한다.\n  1. 법 제21조제4항에 따른 정보기술부문 계획서에 관한 사항\n  2. 법 제21조의2제4항제1호에 관한 사항<개정 2015. 6. 24.>\n  3. 법 제21조의3에서 정한 취약점 분석ㆍ평가 결과 및 보완조치의 이행계획에 관한 사항\n  4. 전산보안사고 및 전산보안관련 규정 위반자의 처리에 관한 사항\n  5. 제14조의2제1항의 클라우드컴퓨팅서비스의 이용에 관한 사항<신설 2022. 11. 23.>\n  6. 기타 정보보호위원회의 장이 정보보안업무 수행에 필요하다고 정한 사항<개정 2022. 11. 23.>\n  ④ 정보보호최고책임자는 정보보호위원회 심의ㆍ의결사항을 최고경영자에게 보고하여야 하며, 정보보호최고책임자가 전자금융거래의 안전성 및 신뢰성에 중대한 영향을 미친다고 판단하는 심의ㆍ의결"
@@ -748,7 +748,7 @@
     "source_article": "제19조제1항 암호프로그램 담당자 외 이용 통제",
     "check_target": "access_log, emp_master",
     "condition_desc": "보안담당(SECUR) 역할이 아닌 직원이 암호/보안 관련 시스템(ADMIN) ADMIN 권한 접근 점검",
-    "pandas_logic": "df_access.merge(df_emp[['emp_id','role_type']], on='emp_id', how='left').merge(df_account[['emp_id','system_cd','permission_level']], on=['emp_id','system_cd'], how='left').query(\"system_cd=='ERP' and permission_level=='ERP' and role_type!='SECUR'\").shape[0]",
+    "pandas_logic": "df_access.merge(df_emp[['emp_id','role_type']], on='emp_id', how='left').merge(df_account[['emp_id','system_cd','permission_level']], on=['emp_id','system_cd'], how='left').query(\"system_cd=='ERP' and permission_level=='ERP' and role_type!='security'\").shape[0]",
     "severity": "HIGH",
     "remediation": "암호시스템 접근권한 보안담당자로 제한",
     "source_article_full": "제19조(암호프로그램 및 키 관리 통제) ① 금융회사 또는 전자금융업자는 암호프로그램에 대하여 담당자 지정, 담당자 이외의 이용 통제 및 원시프로그램(source program) 별도 보관 등을 준수하여 유포 및 부당 이용이 발생하지 않도록 하여야 한다.\n  ② 금융회사 또는 전자금융업자는 암호 및 인증시스템 등에 적용되는 키(Key)(프로그램 진위 및 무결성 확인에 사용되는 암호 또는 인증시스템 등에 적용되는 키를 포함한다)에 대하여 주입ㆍ운용ㆍ갱신ㆍ폐기에 대한 절차 및 방법을 마련하여 안전하게 관리하여야 한다.\n  [본조 신설 2025. 2. .5.]"
