@@ -102,8 +102,10 @@ def chart_base(h=300, legend=False, bg="white"):
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor=bg,
         font=dict(family="Inter,sans-serif",color="#64748b",size=11),
-        xaxis=dict(gridcolor="#f8fafc",linecolor="#e2e8f0",tickfont=dict(size=10)),
-        yaxis=dict(gridcolor="#f8fafc",linecolor="#e2e8f0",tickfont=dict(size=10)),
+        xaxis=dict(gridcolor="#f8fafc",linecolor="#e2e8f0",tickfont=dict(size=10),fixedrange=True),
+        yaxis=dict(gridcolor="#f8fafc",linecolor="#e2e8f0",tickfont=dict(size=10),fixedrange=True),
+        dragmode=False,
+        modebar=dict(remove=["zoom","pan","select","lasso2d","zoomIn2d","zoomOut2d","autoScale2d","resetScale2d"]),
     )
 def card_title(txt):
     return html.P(txt, style={
@@ -263,7 +265,7 @@ def make_layout():
     return html.Div([
         dcc.Store(id="page-store", data="scan"),
         sidebar_el,
-        html.Div(id="main-content", style=CONTENT),
+        dcc.Loading(id="loading-main", type="circle", color="#6366f1", children=html.Div(id="main-content", style=CONTENT)),
     ], style={"fontFamily":"Inter,sans-serif"})
 
 app.layout = make_layout
@@ -438,15 +440,15 @@ def pg_overview(df, month):
         dbc.Row([
             dbc.Col(html.Div([
                 card_title("도메인별 위반 현황"),
-                dcc.Graph(figure=fig_dom, config={"displayModeBar":False}),
+                dcc.Graph(figure=fig_dom, config={"displayModeBar":False,"scrollZoom":False}),
             ], style=CARD), md=4),
             dbc.Col(html.Div([
                 card_title("심각도별 위반 비율"),
-                dcc.Graph(figure=fig_sev, config={"displayModeBar":False}),
+                dcc.Graph(figure=fig_sev, config={"displayModeBar":False,"scrollZoom":False}),
             ], style=CARD), md=3),
             dbc.Col(html.Div([
                 card_title("위험 등급 분포 (리스크 점수 기준)"),
-                dcc.Graph(figure=fig_grade, config={"displayModeBar":False}),
+                dcc.Graph(figure=fig_grade, config={"displayModeBar":False,"scrollZoom":False}),
             ], style=CARD), md=5),
         ], className="g-3 mb-2"),
 
@@ -454,11 +456,11 @@ def pg_overview(df, month):
         dbc.Row([
             dbc.Col(html.Div([
                 card_title("월별 위반 규칙 수 트렌드"),
-                dcc.Graph(figure=fig_trend, config={"displayModeBar":False}),
+                dcc.Graph(figure=fig_trend, config={"displayModeBar":False,"scrollZoom":False}),
             ], style=CARD), md=5),
             dbc.Col(html.Div([
                 card_title("위반 건수 TOP 10"),
-                dcc.Graph(figure=fig_top, config={"displayModeBar":False}),
+                dcc.Graph(figure=fig_top, config={"displayModeBar":False,"scrollZoom":False}),
             ], style=CARD), md=7),
         ], className="g-3"),
     ])
@@ -550,15 +552,15 @@ def pg_domain(df, month, domain):
         dbc.Row([
             dbc.Col(html.Div([
                 card_title("심각도별 위반 비율"),
-                dcc.Graph(figure=fig_pie, config={"displayModeBar":False}),
+                dcc.Graph(figure=fig_pie, config={"displayModeBar":False,"scrollZoom":False}),
             ], style=CARD), md=3),
             dbc.Col(html.Div([
                 card_title("위반 건수 TOP 8"),
-                dcc.Graph(figure=fig_bar, config={"displayModeBar":False}),
+                dcc.Graph(figure=fig_bar, config={"displayModeBar":False,"scrollZoom":False}),
             ], style=CARD), md=5),
             dbc.Col(html.Div([
                 card_title("월별 위반 추이"),
-                dcc.Graph(figure=fig_trend, config={"displayModeBar":False}),
+                dcc.Graph(figure=fig_trend, config={"displayModeBar":False,"scrollZoom":False}),
             ], style=CARD), md=4),
         ], className="g-3 mb-2"),
 
@@ -663,24 +665,24 @@ def pg_analysis(df, month):
                 html.Div(style={"height":"0.8rem"}),
                 dbc.Row([
                     dbc.Col(html.Div([card_title("부서별 위반 히트맵"),
-                                     dcc.Graph(figure=fig_heat, config={"displayModeBar":False})],style=CARD),md=6),
+                                     dcc.Graph(figure=fig_heat, config={"displayModeBar":False,"scrollZoom":False})],style=CARD),md=6),
                     dbc.Col(html.Div([card_title("부서별 종합 위험점수 TOP 10"),
-                                     dcc.Graph(figure=fig_dept, config={"displayModeBar":False})],style=CARD),md=6),
+                                     dcc.Graph(figure=fig_dept, config={"displayModeBar":False,"scrollZoom":False})],style=CARD),md=6),
                 ],className="g-3"),
             ]),
             dbc.Tab(label="리스크 점수화", tab_id="risk", children=[
                 html.Div(style={"height":"0.8rem"}),
                 dbc.Row([
                     dbc.Col(html.Div([card_title("위험 등급 분포"),
-                                     dcc.Graph(figure=fig_grade, config={"displayModeBar":False})],style=CARD),md=4),
+                                     dcc.Graph(figure=fig_grade, config={"displayModeBar":False,"scrollZoom":False})],style=CARD),md=4),
                     dbc.Col(html.Div([card_title("고위험 규칙 TOP 10"),
-                                     dcc.Graph(figure=fig_risk, config={"displayModeBar":False})],style=CARD),md=8),
+                                     dcc.Graph(figure=fig_risk, config={"displayModeBar":False,"scrollZoom":False})],style=CARD),md=8),
                 ],className="g-3"),
             ]),
             dbc.Tab(label="법령 준수율", tab_id="law", children=[
                 html.Div(style={"height":"0.8rem"}),
                 html.Div([card_title("법령별 규칙 준수율"),
-                          dcc.Graph(figure=fig_law, config={"displayModeBar":False})],style=CARD),
+                          dcc.Graph(figure=fig_law, config={"displayModeBar":False,"scrollZoom":False})],style=CARD),
             ]),
         ], active_tab="dept"),
     ])
