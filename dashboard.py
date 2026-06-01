@@ -228,25 +228,64 @@ def sidebar(active):
                  style={"color":"#94a3b8","fontSize":"0.7rem","lineHeight":"1.5"}),
     ], style=SIDEBAR)
 
-app.layout = html.Div([
-    dcc.Store(id="page-store", data="overview"),
-    dcc.Store(id="scan-time-store", data=None),
-    html.Div(id="sidebar-wrap"),
-    html.Div(id="main-content", style=CONTENT),
-], style={"fontFamily":"Inter,sans-serif"})
+DEFAULT_MONTH = MONTHS[-1] if MONTHS else None
 
-# ── 사이드바 렌더 ──────────────────────────────────────────────
-@app.callback(Output("sidebar-wrap","children"), Input("page-store","data"))
-def cb_sidebar(page): return sidebar(page or "overview")
+def make_layout():
+    month_opts = [{"label": MONTH_LABELS.get(m,m), "value": m} for m in MONTHS]
+    nav_links = []
+    for key, label in NAV_PAGES:
+        is_active = key == "scan"
+        nav_links.append(html.Div(label, id=f"nav-{key}", n_clicks=0, style={
+            "padding":"0.55rem 0.85rem","borderRadius":"10px","marginBottom":"3px",
+            "fontSize":"0.87rem","fontWeight":"700" if is_active else "500",
+            "cursor":"pointer","color":"#3b82f6" if is_active else "#64748b",
+            "background":"#eff6ff" if is_active else "transparent",
+            "borderLeft":"3px solid #6366f1" if is_active else "3px solid transparent",
+        }))
+    sidebar_el = html.Div([
+        html.Div([
+            html.Span("IT", style={"color":"#6366f1","fontWeight":"900","fontSize":"1.2rem"}),
+            html.Span("감사", style={"color":"#1e293b","fontWeight":"900","fontSize":"1.2rem"}),
+        ], style={"marginBottom":"0.2rem","fontFamily":"Inter,sans-serif"}),
+        html.P("AI-Powered Audit Control",
+               style={"color":"#94a3b8","fontSize":"0.7rem","marginBottom":"1.2rem"}),
+        html.Hr(style={"borderColor":"#e2e8f0","margin":"0 0 1rem"}),
+        html.P("분석 월", style={"color":"#94a3b8","fontSize":"0.7rem","fontWeight":"700",
+                                "letterSpacing":"0.08em","marginBottom":"0.35rem"}),
+        dcc.Dropdown(id="month-dd", options=month_opts, value=DEFAULT_MONTH,
+                     clearable=False,
+                     style={"fontSize":"0.84rem","marginBottom":"1.1rem","borderRadius":"10px"}),
+        html.Hr(style={"borderColor":"#e2e8f0","margin":"0 0 0.8rem"}),
+        html.P("MENU", style={"color":"#cbd5e1","fontSize":"0.68rem","fontWeight":"700",
+                              "letterSpacing":"0.1em","marginBottom":"0.5rem"}),
+        *nav_links,
+    ], style=SIDEBAR)
+    return html.Div([
+        dcc.Store(id="page-store", data="scan"),
+        sidebar_el,
+        html.Div(id="main-content", style=CONTENT),
+    ], style={"fontFamily":"Inter,sans-serif"})
 
+app.layout = make_layout
+
+# ── 네비 스타일 업데이트 ──────────────────────────────────────
 @app.callback(
-    Output("sidebar-scan-time","children"),
-    Input("scan-time-store","data"),
+    [Output(f"nav-{k}","style") for k,_ in NAV_PAGES],
+    Input("page-store","data"),
 )
-def cb_scan_time(t):
-    if not t: return "아직 점검 전"
-    return [html.Span("마지막 점검",style={"display":"block"}),
-            html.B(t, style={"color":"#475569"})]
+def update_nav(page):
+    page = page or "scan"
+    styles = []
+    for key, _ in NAV_PAGES:
+        active = key == page
+        styles.append({
+            "padding":"0.55rem 0.85rem","borderRadius":"10px","marginBottom":"3px",
+            "fontSize":"0.87rem","fontWeight":"700" if active else "500",
+            "cursor":"pointer","color":"#3b82f6" if active else "#64748b",
+            "background":"#eff6ff" if active else "transparent",
+            "borderLeft":"3px solid #6366f1" if active else "3px solid transparent",
+        })
+    return styles
 
 # ── 라우팅 ────────────────────────────────────────────────────
 @app.callback(
@@ -266,7 +305,8 @@ def route(*_):
     Input("month-dd","value"),
 )
 def render(page, month):
-    page = page or "overview"
+    page = page or "scan"
+    month = month or DEFAULT_MONTH
     df = load_summary(month)
     if page=="overview":  return pg_overview(df, month)
     if page=="access":    return pg_domain(df, month, "접근통제")
