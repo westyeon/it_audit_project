@@ -348,8 +348,8 @@ def pg_overview(df, month):
             hovertemplate=f"{r['audit_domain']}<br>위반: {r['위반']}개<br>총 위반 건수: {r['건수']:,}<extra></extra>",
         ))
     fig_dom.update_layout(**chart_base(h=180, legend=False))
-    fig_dom.update_xaxis(title="위반 규칙 수", range=[0, dom["위반"].max()*1.6])
-    fig_dom.update_yaxis(categoryorder="array", categoryarray=list(DOMAIN_COLORS.keys()))
+    fig_dom.update_xaxes(title="위반 규칙 수", range=[0, dom["위반"].max()*1.6])
+    fig_dom.update_yaxes(categoryorder="array", categoryarray=list(DOMAIN_COLORS.keys()))
 
     # ── 심각도 도넛 ──────────────────────────────────────────────
     sv = (df[df["yn_violation"]=="Y"].groupby("severity")["rule_id"].count()
@@ -378,7 +378,7 @@ def pg_overview(df, month):
         hovertemplate="%{y}<br>%{x:,}건<extra></extra>",
     ))
     fig_top.update_layout(**chart_base(h=300, legend=False))
-    fig_top.update_xaxis(title="위반 건수")
+    fig_top.update_xaxes(title="위반 건수")
 
     # ── 월별 트렌드 ───────────────────────────────────────────────
     trend_rows = []
@@ -525,7 +525,7 @@ def pg_domain(df, month, domain):
             fill="tozeroy", fillcolor=f"rgba{tuple(int(color.lstrip('#')[i:i+2],16) for i in (0,2,4))+(0.08,)}",
         ))
     fig_trend.update_layout(**chart_base(h=200, legend=False, bg="rgba(0,0,0,0)"))
-    fig_trend.update_yaxis(title="위반 규칙 수")
+    fig_trend.update_yaxes(title="위반 규칙 수")
 
     # 위반 목록 테이블
     tbl = (viol.sort_values("violation_count",ascending=False)
@@ -613,7 +613,7 @@ def pg_analysis(df, month):
         text=td["위험점수"], textposition="outside",
     ))
     fig_dept.update_layout(**chart_base(h=300, legend=False))
-    fig_dept.update_yaxis(autorange="reversed")
+    fig_dept.update_yaxes(autorange="reversed")
 
     # 리스크 매트릭스
     dr = risk_score_df(df)
@@ -651,7 +651,7 @@ def pg_analysis(df, month):
         textposition="outside",
     ))
     fig_law.update_layout(**chart_base(h=280, legend=False))
-    fig_law.update_xaxis(range=[0,115])
+    fig_law.update_xaxes(range=[0,115])
 
     return html.Div([
         html.H4("심화 분석", style={"fontWeight":"800","color":"#0f172a","letterSpacing":"-0.03em","marginBottom":"0.2rem"}),
