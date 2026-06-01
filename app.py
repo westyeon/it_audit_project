@@ -504,6 +504,7 @@ def render_sidebar():
             ("access",    "🔐  접근통제"),
             ("change",    "🔄  변경관리"),
             ("ops",       "⚙️  운영통제"),
+            ("analysis",  "🔬  심화 분석"),
             ("scan",      "▶  점검 실행"),
             ("report",    "📄  보고서 생성"),
         ]
@@ -723,6 +724,344 @@ def view_domain(month, domain, sevs):
 
 
 # ════════════════════════════════════════════════════════════════
+# VIEW: 심화 분석 (노트북 분석 자동 반영)
+# ════════════════════════════════════════════════════════════════
+def view_analysis(month):
+    import numpy as np
+
+    df_sum  = load_summary(month)
+    if df_sum is None:
+        st.warning("점검 결과 없음 — '점검 실행' 메뉴에서 먼저 점검을 실행해주세요.")
+        return
+
+    df_emp     = load_db("emp_master.csv")
+    df_account = load_db("sys_account.csv")
+    df_access  = load_db("access_log.csv")
+    df_deploy  = load_db("deploy_log.csv")
+    df_backup  = load_db("backup_log.csv")
+
+    for df, cols in [
+        (df_emp,     ["hire_dt","resign_dt"]),
+        (df_account, ["last_review_dt","last_pw_change_dt"]),
+        (df_access,  ["access_dt"]),
+        (df_deploy,  ["deploy_dt"]),
+        (df_backup,  ["backup_dt"]),
+    ]:
+        for col in cols:
+            if col in df.columns:
+                df[col] = pd.to_datetime(df[col], errors="coerce")
+
+    SYS_MAP = {"CRED":"신용평가시스템","PORTAL":"고객포털",
+               "ERP":"경영관리시스템","DW":"데이터웨어하우스","DEVP":"ITSM"}
+    for df in [df_account, df_access, df_deploy, df_backup]:
+        if "system_cd" in df.columns:
+            df["system_nm"] = df["system_cd"].map(SYS_MAP).fillna(df["system_cd"])
+
+    st.markdown("<div class='view-header'>🔬 심화 분석</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='view-sub'>{MONTH_LABELS[month]} 기준 · DB 데이터 자동 분석</div>",
+                unsafe_allow_html=True)
+
+    tab1, tab2, tab3, tab4 = st.tabs(
+        ["📍 부서별 위험도", "👤 역할별 분석", "⚖️ 리스크 매트릭스", "📜 법령 준수율"])
+
+    # ── 탭1: 부서별 위험도 히트맵 ────────────────────────────────
+    with tab1:
+        resigned_ids = set(df_emp[df_emp["yn_employed"]=="N"]["emp_id"])
+        active_res = df_account[
+            df_account["emp_id"].isin(resigned_ids) &
+            (df_account["account_status"]=="active")
+        ].merge(df_emp[["emp_id","dept_nm"]], on="emp_id", how="left")
+
+        overdue = df_account[df_account["yn_overdue_review"]=="Y"].merge(
+            df_emp[["emp_id","dept_nm"]], on="emp_id", how="left")
+
+        after_h = df_access[df_access["yn_after_hours"]=="Y"].merge(
+            df_emp[["emp_id","dept_nm"]], on="emp_id", how="left")
+
+        r1 = active_res.groupby("dept_nm").size().rename("퇴사자계정")
+        r2 = overdue.groupby("dept_nm").size().rename("권한검토초과")
+        r3 = after_h.groupby("dept_nm").size().rename("시간외접속")
+
+        dept_risk = pd.concat([r1, r2, r3], axis=1).fillna(0).astype(int)
+        dept_risk["위험점수"] = dept_risk["퇴사자계정"]*3 + dept_risk["권한검토초과"]*2 + dept_risk["시간외접속"]
+        dept_risk = dept_risk.sort_values("위험점수", ascending=False)
+
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown("<div class='dash-card'><div class='card-title'>부서별 위반 히트맵</div>",
+                        unsafe_allow_html=True)
+            heat = dept_risk[["퇴사자계정","권한검토초과","시간외접속"]].head(12)
+            fig_h = go.Figure(go.Heatmap(
+                z=heat.values, x=heat.columns.tolist(), y=heat.index.tolist(),
+                colorscale="YlOrRd", text=heat.values,
+                texttemplate="%{text}", textfont={"size":11},
+                hovertemplate="%{y}<br>%{x}: %{z}건<extra></extra>",
+            ))
+            fig_h.update_layout(height=350, margin=dict(l=10,r=10,t=10,b=10),
+                                paper_bgcolor="rgba(0,0,0,0)",
+                                plot_bgcolor="rgba(0,0,0,0)",
+                                font=dict(color="#e2e8f0"))
+            st.plotly_chart(fig_h, use_container_width=True, config={"displayModeBar":False})
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        with c2:
+            st.markdown("<div class='dash-card'><div class='card-title'>부서별 종합 위험점수 TOP 10</div>",
+                        unsafe_allow_html=True)
+            top10 = dept_risk.head(10).reset_index()
+            fig_b = go.Figure(go.Bar(
+                x=top10["위험점수"], y=top10["dept_nm"],
+                orientation="h",
+                marker_color=["#ef4444" if s>=10 else "#f59e0b" if s>=5 else "#3b82f6"
+                              for s in top10["위험점수"]],
+                text=top10["위험점수"], textposition="outside",
+            ))
+            fig_b.update_layout(height=350, margin=dict(l=10,r=10,t=10,b=10),
+                                paper_bgcolor="rgba(0,0,0,0)",
+                                plot_bgcolor="rgba(0,0,0,0)",
+                                xaxis=dict(color="#94a3b8"),
+                                yaxis=dict(color="#e2e8f0", autorange="reversed"),
+                                font=dict(color="#e2e8f0"))
+            st.plotly_chart(fig_b, use_container_width=True, config={"displayModeBar":False})
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        st.markdown("<div class='dash-card'><div class='card-title'>부서별 위험점수 상세</div>",
+                    unsafe_allow_html=True)
+        st.dataframe(dept_risk.reset_index().rename(columns={"dept_nm":"부서명"}),
+                     use_container_width=True, hide_index=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    # ── 탭2: 역할별 분석 ─────────────────────────────────────────
+    with tab2:
+        roles  = ["developer","operator","security","business"]
+        labels = ["개발(developer)","운영(operator)","보안(security)","업무(business)"]
+
+        ah_emp = df_access[df_access["yn_after_hours"]=="Y"][["emp_id"]].drop_duplicates()
+        ah_emp = ah_emp.merge(df_emp[["emp_id","role_type"]], on="emp_id", how="left")
+        ah_by  = ah_emp.groupby("role_type").size()
+
+        od_emp = df_account[df_account["yn_overdue_review"]=="Y"][["emp_id"]].drop_duplicates()
+        od_emp = od_emp.merge(df_emp[["emp_id","role_type"]], on="emp_id", how="left")
+        od_by  = od_emp.groupby("role_type").size()
+
+        ar_emp = df_account[
+            df_account["emp_id"].isin(resigned_ids) & (df_account["account_status"]=="active")
+        ][["emp_id"]].drop_duplicates()
+        ar_emp = ar_emp.merge(df_emp[["emp_id","role_type"]], on="emp_id", how="left")
+        ar_by  = ar_emp.groupby("role_type").size()
+
+        role_df = pd.DataFrame({
+            "시간외접속":   [ah_by.get(r,0) for r in roles],
+            "권한검토초과": [od_by.get(r,0) for r in roles],
+            "퇴사자계정":   [ar_by.get(r,0) for r in roles],
+        }, index=labels)
+
+        role_total = df_emp.groupby("role_type").size().reindex(roles, fill_value=0)
+        all_viol   = set(ah_emp["emp_id"].dropna()) | set(od_emp["emp_id"].dropna())
+        role_viol  = df_emp[df_emp["emp_id"].isin(all_viol)].groupby("role_type").size().reindex(roles, fill_value=0)
+        role_rate  = (role_viol / role_total * 100).fillna(0).round(1)
+
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown("<div class='dash-card'><div class='card-title'>역할별 접근통제 위반 현황</div>",
+                        unsafe_allow_html=True)
+            fig_r = go.Figure()
+            colors_r = ["#ef4444","#f59e0b","#9b59b6"]
+            for i, (col, color) in enumerate(zip(role_df.columns, colors_r)):
+                fig_r.add_trace(go.Bar(name=col, x=labels, y=role_df[col], marker_color=color))
+            fig_r.update_layout(barmode="group", height=280,
+                                margin=dict(l=10,r=10,t=10,b=10),
+                                paper_bgcolor="rgba(0,0,0,0)",
+                                plot_bgcolor="rgba(0,0,0,0)",
+                                legend=dict(font=dict(color="#e2e8f0")),
+                                xaxis=dict(color="#94a3b8"),
+                                yaxis=dict(color="#94a3b8"),
+                                font=dict(color="#e2e8f0"))
+            st.plotly_chart(fig_r, use_container_width=True, config={"displayModeBar":False})
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        with c2:
+            st.markdown("<div class='dash-card'><div class='card-title'>역할별 위반 관여 비율</div>",
+                        unsafe_allow_html=True)
+            fig_rate = go.Figure(go.Bar(
+                x=labels, y=role_rate.values,
+                marker_color=["#ef4444" if v>20 else "#f59e0b" if v>10 else "#3b82f6"
+                              for v in role_rate.values],
+                text=[f"{v}%" for v in role_rate.values],
+                textposition="outside",
+            ))
+            fig_rate.update_layout(height=280, margin=dict(l=10,r=10,t=10,b=10),
+                                   paper_bgcolor="rgba(0,0,0,0)",
+                                   plot_bgcolor="rgba(0,0,0,0)",
+                                   xaxis=dict(color="#94a3b8"),
+                                   yaxis=dict(color="#94a3b8", title="비율 (%)"),
+                                   font=dict(color="#e2e8f0"))
+            st.plotly_chart(fig_rate, use_container_width=True, config={"displayModeBar":False})
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        st.markdown("<div class='dash-card'><div class='card-title'>역할별 요약</div>",
+                    unsafe_allow_html=True)
+        summary = pd.DataFrame({
+            "역할": labels,
+            "전체인원": role_total.values,
+            "위반관여": role_viol.values,
+            "위반율(%)": role_rate.values,
+        })
+        st.dataframe(summary, use_container_width=True, hide_index=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    # ── 탭3: 리스크 점수화 매트릭스 ──────────────────────────────
+    with tab3:
+        sev_score = {"HIGH":3,"MEDIUM":2,"LOW":1}
+        df_r = df_sum.copy()
+        df_r["심각도점수"]   = df_r["severity"].map(sev_score).fillna(1)
+        df_r["위반건수_log"] = np.log1p(df_r["violation_count"])
+        df_r["위험점수"]     = (df_r["심각도점수"] * df_r["위반건수_log"]).round(2)
+        df_r["위험점수"]     = df_r["위험점수"].where(df_r["yn_violation"]=="Y", 0)
+
+        def risk_grade(s):
+            if s>=8:   return "Critical"
+            elif s>=5: return "High"
+            elif s>=2: return "Medium"
+            elif s>0:  return "Low"
+            else:      return "이상없음"
+        df_r["위험등급"] = df_r["위험점수"].apply(risk_grade)
+
+        grade_colors = {"Critical":"#8B0000","High":"#ef4444",
+                        "Medium":"#f59e0b","Low":"#3b82f6","이상없음":"#64748b"}
+
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown("<div class='dash-card'><div class='card-title'>위험 등급별 규칙 분포</div>",
+                        unsafe_allow_html=True)
+            grade_order = ["Critical","High","Medium","Low","이상없음"]
+            gcnt = df_r.groupby("위험등급").size().reindex(grade_order, fill_value=0)
+            gcnt_nz = gcnt[gcnt>0]
+            fig_pie = go.Figure(go.Pie(
+                labels=gcnt_nz.index, values=gcnt_nz.values, hole=0.55,
+                marker_colors=[grade_colors[g] for g in gcnt_nz.index],
+                textinfo="label+value", textfont=dict(size=11),
+            ))
+            fig_pie.update_layout(height=280, showlegend=True,
+                                  margin=dict(l=10,r=10,t=10,b=10),
+                                  paper_bgcolor="rgba(0,0,0,0)",
+                                  legend=dict(font=dict(color="#e2e8f0")),
+                                  font=dict(color="#e2e8f0"))
+            st.plotly_chart(fig_pie, use_container_width=True, config={"displayModeBar":False})
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        with c2:
+            st.markdown("<div class='dash-card'><div class='card-title'>고위험 규칙 TOP 10</div>",
+                        unsafe_allow_html=True)
+            top10r = df_r[df_r["위험점수"]>0].nlargest(10,"위험점수")
+            fig_top = go.Figure(go.Bar(
+                x=top10r["위험점수"][::-1],
+                y=[f"{r} {n[:10]}" for r,n in zip(top10r["rule_id"][::-1],top10r["rule_nm"][::-1])],
+                orientation="h",
+                marker_color=[grade_colors[g] for g in top10r["위험등급"][::-1]],
+                text=top10r["위험점수"][::-1].round(1), textposition="outside",
+            ))
+            fig_top.update_layout(height=280, margin=dict(l=10,r=10,t=10,b=10),
+                                  paper_bgcolor="rgba(0,0,0,0)",
+                                  plot_bgcolor="rgba(0,0,0,0)",
+                                  xaxis=dict(color="#94a3b8"),
+                                  yaxis=dict(color="#e2e8f0"),
+                                  font=dict(color="#e2e8f0"))
+            st.plotly_chart(fig_top, use_container_width=True, config={"displayModeBar":False})
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        st.markdown("<div class='dash-card'><div class='card-title'>위험도 산점도 (심각도 × 위반건수)</div>",
+                    unsafe_allow_html=True)
+        viol_df = df_r[df_r["yn_violation"]=="Y"].copy()
+        viol_df["jitter"] = np.random.uniform(-0.15, 0.15, len(viol_df))
+        fig_sc = go.Figure(go.Scatter(
+            x=viol_df["violation_count"],
+            y=viol_df["심각도점수"] + viol_df["jitter"],
+            mode="markers",
+            marker=dict(
+                color=[grade_colors[g] for g in viol_df["위험등급"]],
+                size=10, opacity=0.8,
+                line=dict(width=1, color="white"),
+            ),
+            text=viol_df["rule_nm"],
+            hovertemplate="<b>%{text}</b><br>위반건수: %{x}<br><extra></extra>",
+        ))
+        fig_sc.update_layout(
+            height=250, margin=dict(l=10,r=10,t=10,b=10),
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            xaxis=dict(type="log", title="위반 건수 (log)", color="#94a3b8",
+                       gridcolor="rgba(148,163,184,0.1)"),
+            yaxis=dict(tickvals=[1,2,3], ticktext=["LOW","MEDIUM","HIGH"],
+                       color="#94a3b8", gridcolor="rgba(148,163,184,0.1)"),
+            font=dict(color="#e2e8f0"),
+        )
+        st.plotly_chart(fig_sc, use_container_width=True, config={"displayModeBar":False})
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    # ── 탭4: 법령 준수율 ─────────────────────────────────────────
+    with tab4:
+        law_viol = df_sum[df_sum["yn_violation"]=="Y"].copy()
+        law_total_cnt = df_sum.groupby("source_law").size()
+        law_viol_cnt  = law_viol.groupby("source_law").size()
+        law_comp = ((1 - law_viol_cnt/law_total_cnt)*100).round(1).reset_index()
+        law_comp.columns = ["법령명","준수율(%)"]
+        law_comp = law_comp.sort_values("준수율(%)")
+
+        law_sum = law_viol.groupby("source_law").agg(
+            위반규칙수=("rule_id","count"),
+            총위반건수=("violation_count","sum"),
+            HIGH건수=("severity", lambda x: (x=="HIGH").sum())
+        ).reset_index().sort_values("위반규칙수", ascending=False)
+
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown("<div class='dash-card'><div class='card-title'>법령별 준수율</div>",
+                        unsafe_allow_html=True)
+            fig_comp = go.Figure(go.Bar(
+                x=law_comp["준수율(%)"], y=law_comp["법령명"],
+                orientation="h",
+                marker_color=["#ef4444" if v<50 else "#f59e0b" if v<75 else "#10b981"
+                              for v in law_comp["준수율(%)"]],
+                text=[f"{v}%" for v in law_comp["준수율(%)"]],
+                textposition="outside",
+            ))
+            fig_comp.update_layout(height=300, margin=dict(l=10,r=80,t=10,b=10),
+                                   paper_bgcolor="rgba(0,0,0,0)",
+                                   plot_bgcolor="rgba(0,0,0,0)",
+                                   xaxis=dict(range=[0,115], color="#94a3b8"),
+                                   yaxis=dict(color="#e2e8f0"),
+                                   font=dict(color="#e2e8f0"))
+            st.plotly_chart(fig_comp, use_container_width=True, config={"displayModeBar":False})
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        with c2:
+            st.markdown("<div class='dash-card'><div class='card-title'>법령별 위반 규칙 수</div>",
+                        unsafe_allow_html=True)
+            fig_law = go.Figure(go.Bar(
+                x=law_sum["위반규칙수"], y=law_sum["source_law"],
+                orientation="h",
+                marker_color=["#ef4444" if h>0 else "#3b82f6" for h in law_sum["HIGH건수"]],
+                text=[f"{v}개" + (f" (HIGH {h})" if h>0 else "")
+                      for v,h in zip(law_sum["위반규칙수"],law_sum["HIGH건수"])],
+                textposition="outside",
+            ))
+            fig_law.update_layout(height=300, margin=dict(l=10,r=120,t=10,b=10),
+                                  paper_bgcolor="rgba(0,0,0,0)",
+                                  plot_bgcolor="rgba(0,0,0,0)",
+                                  xaxis=dict(color="#94a3b8"),
+                                  yaxis=dict(color="#e2e8f0"),
+                                  font=dict(color="#e2e8f0"))
+            st.plotly_chart(fig_law, use_container_width=True, config={"displayModeBar":False})
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        st.markdown("<div class='dash-card'><div class='card-title'>법령별 위반 현황 상세</div>",
+                    unsafe_allow_html=True)
+        st.dataframe(law_sum.rename(columns={"source_law":"법령명"}),
+                     use_container_width=True, hide_index=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+
+# ════════════════════════════════════════════════════════════════
 # VIEW: 점검 실행
 # ════════════════════════════════════════════════════════════════
 def view_scan(month):
@@ -895,7 +1234,9 @@ def main():
     month, domains, sevs = render_sidebar()
     view = st.session_state.view
 
-    if view == "overview":
+    if view == "analysis":
+        view_analysis(month)
+    elif view == "overview":
         view_overview(month, domains, sevs)
     elif view == "access":
         view_domain(month, "접근통제", sevs)
