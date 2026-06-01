@@ -300,6 +300,21 @@ def route(*_):
     if not ctx.triggered: return no_update
     return ctx.triggered[0]["prop_id"].split(".")[0].replace("nav-","")
 
+# ── 도메인 차트 클릭 → 상세 페이지 이동 ─────────────────────
+@app.callback(
+    Output("page-store","data", allow_duplicate=True),
+    Input("domain-click-chart","clickData"),
+    prevent_initial_call=True,
+)
+def drill_domain(clickData):
+    if not clickData: return no_update
+    try:
+        domain = clickData["points"][0]["y"]
+        mapping = {"접근통제":"access","변경관리":"change","운영통제":"ops"}
+        return mapping.get(domain, no_update)
+    except:
+        return no_update
+
 # ── 메인 콘텐츠 ───────────────────────────────────────────────
 @app.callback(
     Output("main-content","children"),
@@ -405,11 +420,14 @@ def pg_overview(df, month):
                     marker=dict(size=7, color=color),
                     hovertemplate=f"{domain}<br>%{{x}}: %{{y}}개<extra></extra>",
                 ))
-    fig_trend.update_layout(**chart_base(h=220, legend=True, bg="rgba(0,0,0,0)"))
-    fig_trend.update_layout(legend=dict(
-        orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
-        font=dict(size=11),
-    ))
+    fig_trend.update_layout(**chart_base(h=240, legend=True, bg="rgba(0,0,0,0)"))
+    fig_trend.update_layout(
+        legend=dict(
+            orientation="h", yanchor="top", y=-0.18, xanchor="center", x=0.5,
+            font=dict(size=11), bgcolor="rgba(0,0,0,0)",
+        ),
+        margin=dict(l=10,r=20,t=10,b=50),
+    )
 
     # ── 위험 등급 분포 ────────────────────────────────────────────
     dr = risk_score_df(df)
@@ -440,7 +458,10 @@ def pg_overview(df, month):
         dbc.Row([
             dbc.Col(html.Div([
                 card_title("도메인별 위반 현황"),
-                dcc.Graph(figure=fig_dom, config={"displayModeBar":False,"scrollZoom":False}),
+                dcc.Graph(id="domain-click-chart", figure=fig_dom,
+                          config={"displayModeBar":False,"scrollZoom":False}),
+                html.P("클릭하면 상세 페이지로 이동합니다",
+                       style={"fontSize":"0.72rem","color":"#94a3b8","textAlign":"center","marginTop":"0.3rem"}),
             ], style=CARD), md=4),
             dbc.Col(html.Div([
                 card_title("심각도별 위반 비율"),
