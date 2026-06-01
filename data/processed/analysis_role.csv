@@ -1,0 +1,5 @@
+﻿역할코드,역할명,시간외접속,권한검토초과,퇴사자계정,전체인원,위반관여,위반율(%)
+developer,개발(developer),0,4,0,85,4,4.7
+operator,운영(operator),1,0,0,30,1,3.3
+security,보안(security),0,1,0,20,1,5.0
+business,업무(business),4,6,0,365,10,2.7
