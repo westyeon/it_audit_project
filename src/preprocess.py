@@ -166,7 +166,8 @@ def print_violation_summary(dfs_out: dict):
 
 
 if __name__ == "__main__":
-    os.chdir("/Users/kwakseoyeon/Documents/it_audit_project")
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.chdir(BASE_DIR)
     os.makedirs(OUT_DIR, exist_ok=True)
 
     print("=" * 60)

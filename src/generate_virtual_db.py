@@ -62,24 +62,24 @@ POSITION_BY_GRADE = {
 HIRE_YEARS         = list(range(2016, 2026))
 HIRE_YEAR_COUNTS   = [30, 40, 50, 55, 60, 55, 60, 55, 55, 40]
 
-# 로그 기간 (6개월) - 2025년 11월 ~ 2026년 4월
+# 로그 기간 - 2025년 11월 ~ 2026년 5월
 LOG_START = datetime(2025, 11, 1)
-LOG_END   = datetime(2026,  4, 30)
+LOG_END   = datetime(2026,  5, 31)
 
 # ══════════════════════════════════════════════
 # 위반 건수 설정 (Rule 엔진 검증 기준값)
 # ══════════════════════════════════════════════
 V = {
-    'resigned_active_accounts': 15,   # 퇴직자인데 계정 active
-    'overdue_review_accounts':  30,   # 권한검토 6개월 초과
-    'excess_permission':        10,   # business 직무에 admin 권한
-    'after_hours_accounts':     15,   # 업무시간 외 접속 계정 수
-    'multi_ip_accounts':        10,   # 동시간대 다중 IP 계정 수
-    'post_approval_deploy':     20,   # 사후 승인 (배포일 < 결재일)
-    'no_cr_deploy':             15,   # CR 없는 무단 배포
-    'job_sep_violation':        15,   # 신청자 = 배포자 (직무분리 위반)
-    'backup_fail':              20,   # 백업 실패
-    'no_restore_test':          40,   # full backup 중 복구 테스트 미실시
+    'resigned_active_accounts': 0,    # 퇴직자 계정은 즉시 회수 (금융권 통제 정상)
+    'overdue_review_accounts':  12,   # 권한검토 6개월 초과 (일부 담당자 지연)
+    'excess_permission':         5,   # business 직무 admin 권한 (간헐적 오부여)
+    'after_hours_accounts':      4,   # 업무시간 외 접속 (긴급 대응 등 소수)
+    'multi_ip_accounts':         3,   # 동시간대 다중 IP (VPN + 사무실 등)
+    'post_approval_deploy':     18,   # 사후 승인 배포 (긴급 패치 후 사후 결재)
+    'no_cr_deploy':             12,   # CR 없는 무단 배포
+    'job_sep_violation':        14,   # 직무분리 위반 (신청자 = 배포자)
+    'backup_fail':              18,   # 백업 실패
+    'no_restore_test':          12,   # full backup 복구 테스트 미실시
 }
 
 # ══════════════════════════════════════════════
@@ -180,7 +180,7 @@ def gen_emp_master() -> pd.DataFrame:
             max(hire + timedelta(days=365), date(2023, 1, 1)),
             date(2026, 3, 31)
         )
-        df.at[idx, 'resign_dt']   = resign
+        df.at[idx, 'resign_dt']   = str(resign)
         df.at[idx, 'yn_employed'] = 'N'
 
     df = df.sort_values('emp_id').reset_index(drop=True)
@@ -198,7 +198,7 @@ def gen_sys_account(emp_df: pd.DataFrame) -> pd.DataFrame:
     # role별 접근 가능 시스템
     ROLE_SYSTEMS = {
         'developer': ['CRED', 'DEVP', 'DW'],
-        'operator':  ['CRED', 'PORTAL', 'ERP', 'DW', 'DEVP'],
+        'operator':  ['CRED', 'PORTAL', 'ERP', 'DW'],
         'security':  ['CRED', 'ERP', 'DW'],
         'business':  ['PORTAL', 'ERP'],
     }
@@ -237,7 +237,7 @@ def gen_sys_account(emp_df: pd.DataFrame) -> pd.DataFrame:
                 'account_status':   status,
                 'permission_level': perm,
                 'create_dt':        create_dt,
-                'last_pw_change_dt': rand_date(date(2025, 1, 1), date(2026, 4, 30)),
+                'last_pw_change_dt': rand_date(date(2026, 3, 1), date(2026, 4, 30)),
                 'last_review_dt':   review_dt,
             })
             seq += 1
@@ -245,11 +245,8 @@ def gen_sys_account(emp_df: pd.DataFrame) -> pd.DataFrame:
     df = pd.DataFrame(rows)
 
     # ── 위반 삽입 ──────────────────────────────
-    # (1) 퇴직자 계정 미비활성화: 퇴사자 중 15개 계정을 active로
-    resigned_ids = emp_df[emp_df['yn_employed'] == 'N']['emp_id'].tolist()
-    v1_targets = df[df['emp_id'].isin(resigned_ids)].sample(
-        n=V['resigned_active_accounts'], random_state=42).index
-    df.loc[v1_targets, 'account_status'] = 'active'
+    # (1) 퇴직자 계정은 모두 inactive — 금융권 통제 기준 정상 처리
+    #     (resigned_active_accounts = 0, 별도 삽입 없음)
 
     # (2) 권한검토 6개월 초과: last_review_dt를 2025-04-30 이전으로 설정
     active_idx = df[df['account_status'] == 'active'].sample(
@@ -301,7 +298,7 @@ def gen_access_log(emp_df: pd.DataFrame, acc_df: pd.DataFrame) -> pd.DataFrame:
                         'access_dt':   business_hours_dt(current.date()),
                         'action_type': random.choices(ACTION_TYPES, weights=ACTION_W)[0],
                         'src_ip':      random_ip(internal=True),
-                        'result_cd':   random.choices(['S', 'F'], weights=[0.97, 0.03])[0],
+                        'result_cd':   random.choices(['S', 'F'], weights=[0.997, 0.003])[0],
                     })
                     log_seq += 1
         current += timedelta(days=1)
@@ -467,6 +464,21 @@ def gen_itsm_req(emp_df: pd.DataFrame) -> pd.DataFrame:
         doc_seq += 1
 
     df = pd.DataFrame(rows).sort_values('request_dt').reset_index(drop=True)
+
+    # 배포 완료 후 30일 이상 지난 APPROVED 건은 CLOSED 처리
+    # (보안성심의 미보고 위반: 의도적으로 8건만 APPROVED로 남김)
+    df['request_dt_ts'] = pd.to_datetime(df['request_dt'])
+    cutoff = datetime(2026, 5, 1)    # 로그 종료일(2026-04-30) 이후 → 전체 대상
+    approved_old = df[
+        (df['req_status'] == 'APPROVED') &
+        (df['request_dt_ts'] < cutoff)
+    ].index.tolist()
+    # 이 중 8건을 제외하고 나머지는 CLOSED
+    keep_open = random.sample(approved_old, min(8, len(approved_old)))
+    close_idx = [i for i in approved_old if i not in keep_open]
+    df.loc[close_idx, 'req_status'] = 'CLOSED'
+    df.drop(columns=['request_dt_ts'], inplace=True)
+
     df.to_csv(f"{OUTPUT_DIR}/itsm_req.csv", index=False, encoding='utf-8-sig')
     print(f"    → {len(df)}건 생성")
     return df
@@ -481,7 +493,8 @@ def gen_deploy_log(emp_df: pd.DataFrame, itsm_df: pd.DataFrame) -> pd.DataFrame:
     ops_ids = emp_df[emp_df['role_type'] == 'operator']['emp_id'].tolist()
     dev_ids = emp_df[emp_df['role_type'] == 'developer']['emp_id'].tolist()
 
-    approved = itsm_df[itsm_df['req_status'] == 'APPROVED'].copy()
+    # CLOSED된 건도 실제로 배포됐으므로 포함
+    approved = itsm_df[itsm_df['req_status'].isin(['APPROVED', 'CLOSED'])].copy()
 
     COMMIT_PATHS = [
         '/src/banking/transfer.py', '/src/auth/login.py',

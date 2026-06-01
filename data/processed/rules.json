@@ -267,7 +267,7 @@
     "source_article": "연구개발망은 내부업무망과 분리된 독립 인프라로 구성, 내부망 자원 연동 사용 불가",
     "check_target": "sys_account",
     "condition_desc": "동일 직원이 내부업무시스템(CORE/IBANK/ADMIN)과 개발시스템(DEVP) 계정을 동시 보유하고 양쪽 모두 ACTIVE 상태인 경우 점검",
-    "pandas_logic": "internal_sys = ['CRED', 'PORTAL', 'ERP']\ndev_sys = ['DEVP']\nactive_accounts = df_account[df_account['account_status'] == 'ACTIVE']\ninternal_users = set(active_accounts[active_accounts['system_cd'].isin(internal_sys)]['emp_id'])\ndev_users = set(active_accounts[active_accounts['system_cd'].isin(dev_sys)]['emp_id'])\nviolation_count = len(internal_users & dev_users)",
+    "pandas_logic": "internal_sys = ['CRED', 'PORTAL', 'ERP']\ndev_sys = ['DEVP']\nactive_accounts = df_account[df_account['account_status'] == 'active']\n# developer는 DEVP 정상 사용 대상 — business/operator만 점검\nnon_dev = set(df_emp[df_emp['role_type'] != 'developer']['emp_id'])\ninternal_users = set(active_accounts[active_accounts['system_cd'].isin(internal_sys) & active_accounts['emp_id'].isin(non_dev)]['emp_id'])\ndev_users = set(active_accounts[active_accounts['system_cd'].isin(dev_sys)]['emp_id'])\nviolation_count = len(internal_users & dev_users)",
     "severity": "MEDIUM",
     "remediation": "내부망과 개발망 계정 분리 또는 망분리 환경 재검토",
     "source_article_full": "전자금융감독규정 해설서: 연구개발망은 내부업무망과 분리된 독립 인프라로 구성하여야 하며, 내부망 자원을 연동하여 사용할 수 없다."
@@ -592,7 +592,7 @@
     "source_article": "제34조의3제2항제2호 정해진 횟수 이상 입력오류시 거래 중지",
     "check_target": "access_log",
     "condition_desc": "로그인 실패 5회 이상 후 동일 세션에서 성공 로그인 발생 - 차단 미작동",
-    "pandas_logic": "df_login = df_access[df_access['action_type'] == 'LOGIN'].sort_values(['emp_id', 'access_dt'])\ndf_login['prev_fails'] = df_login.groupby('emp_id')['result_cd'].transform(lambda x: (x == 'FAIL').cumsum().shift(1).fillna(0))\nviolation_count = len(df_login[(df_login['result_cd'] == 'SUCCESS') & (df_login['prev_fails'] >= 5)])",
+    "pandas_logic": "df_login = df_access[df_access['action_type'] == 'LOGIN'].sort_values(['emp_id', 'access_dt']).copy()\ndf_login['cum_fails'] = df_login.groupby('emp_id')['result_cd'].transform(lambda x: (x == 'FAIL').cumsum().shift(1).fillna(0))\nviolation_count = df_login[(df_login['result_cd'] == 'SUCCESS') & (df_login['cum_fails'] >= 5)]['emp_id'].nunique()",
     "severity": "HIGH",
     "remediation": "5회 연속 실패 시 계정 잠금 및 본인확인 절차 적용",
     "source_article_full": "제34조의3(이용자 비밀번호 관리) ① 금융회사 또는 전자금융업자는 정보처리시스템 및 전산자료에 보관하고 있는 이용자의 비밀번호를 암호화하여 보관하며 동 비밀번호를 조회할 수 없도록 하여야 한다. 다만, 비밀번호의 조회가 불가피하다고 인정되는 경우에는 그 조회사유ㆍ내용 등을 기록ㆍ관리하여야 한다.\n  ② 금융회사 또는 전자금융업자는 이용자의 비밀번호 유출을 방지하기 위하여 다음 각 호의 사항을 정보처리시스템에 반영하고 이를 준수하여야 한다.\n  1. 제3자가 쉽게 유추할 수 없는 비밀번호 작성규칙 및 등록ㆍ변경 절차를 수립ㆍ운영할 것\n  2. 미리 정한 횟수 이상의 비밀번호 입력 오류가 발생한 경우 즉시 해당 비밀번호를 이용하는 거래를 중지시키고 본인 확인절차를 거친 후 비밀번호 재부여 및 거래 재개(이체 비밀번호 등 동일한 비밀번호가 다양한 형태의 전자금융거래에 공통으로 이용되는 경우, 입력오류 횟수는 이용되는 모든 전자금융거래에 대하여 통산한다)\n  3. 신규 거래, 비밀번호 변경, 이체 신청과 같이 비밀번호를 등록ㆍ사용하는 경우 사전에 신청서 등에 기입하지 않고, 핀패드 등 보안장치를 이용하거나 이용자가 사후에 전자적 장치를 이용하여 직접 입력하는 방식"

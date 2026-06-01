@@ -11,14 +11,17 @@ IT감사 Rule 엔진
 
 import os
 import json
+import argparse
 import pandas as pd
 from datetime import datetime
 
 # ── 경로 설정 ────────────────────────────────────────────────
-BASE_DIR  = "/Users/kwakseoyeon/Documents/it_audit_project"
-DB_DIR    = f"{BASE_DIR}/data/processed/virtual_db"
-RULES_PATH = f"{BASE_DIR}/data/processed/rules.json"
-OUT_DIR   = f"{BASE_DIR}/data/processed"
+BASE_DIR  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DB_DIR    = os.path.join(BASE_DIR, "data", "processed", "virtual_db")
+RULES_PATH = os.path.join(BASE_DIR, "data", "processed", "rules.json")
+OUT_DIR   = os.path.join(BASE_DIR, "data", "processed")
+
+SEVERITY_SCORE = {"HIGH": 10, "MEDIUM": 5, "LOW": 2}
 
 
 # ── 1. 데이터 로드 ───────────────────────────────────────────
@@ -188,18 +191,22 @@ def run_all_rules(rules: list[dict], dfs: dict) -> tuple[pd.DataFrame, pd.DataFr
         print(f"  {rule_id} [{domain}] {rule_nm}")
         print(f"       → {status}")
 
+        is_violated = count_display > 0
+        sev_score   = SEVERITY_SCORE.get(severity, 0)
         summary_rows.append({
-            "rule_id":       rule_id,
-            "rule_nm":       rule_nm,
-            "audit_domain":  domain,
-            "severity":      severity,
-            "source_law":    rule.get("source_law", ""),
+            "rule_id":        rule_id,
+            "rule_nm":        rule_nm,
+            "audit_domain":   domain,
+            "severity":       severity,
+            "severity_score": sev_score,
+            "source_law":     rule.get("source_law", ""),
             "source_article": rule.get("source_article", ""),
-            "check_target":  rule.get("check_target", ""),
+            "check_target":   rule.get("check_target", ""),
             "condition_desc": rule.get("condition_desc", ""),
             "violation_count": count_display,
-            "yn_violation":  "Y" if count_display > 0 else "N",
-            "remediation":   rule.get("remediation", ""),
+            "yn_violation":   "Y" if is_violated else "N",
+            "risk_deduction": sev_score if is_violated else 0,
+            "remediation":    rule.get("remediation", ""),
         })
 
         if detail is not None and len(detail) > 0:
@@ -249,31 +256,70 @@ def print_report(summary_df: pd.DataFrame):
     print(top10[["rule_id", "rule_nm", "audit_domain", "severity", "violation_count"]].to_string(index=False))
 
 
+# ── 월별 필터링 ───────────────────────────────────────────────
+def filter_by_month(dfs: dict, month: str) -> dict:
+    """
+    month: 'YYYY-MM' 형식
+    날짜 컬럼이 있는 테이블을 해당 월 데이터만 남김
+    emp_master / sys_account는 스냅샷이므로 필터 없이 전체 사용
+    """
+    year, mon = map(int, month.split("-"))
+    date_col_map = {
+        "df_access": "access_dt",
+        "df_deploy": "deploy_dt",
+        "df_backup": "backup_dt",
+        "df_itsm":   "request_dt",
+    }
+    filtered = dict(dfs)
+    for key, col in date_col_map.items():
+        df = dfs[key]
+        if col in df.columns:
+            filtered[key] = df[
+                (df[col].dt.year == year) & (df[col].dt.month == mon)
+            ].copy()
+            print(f"  {key} [{month}]: {len(filtered[key]):,}행 (전체 {len(df):,}행)")
+    return filtered
+
+
 # ── 메인 실행 ────────────────────────────────────────────────
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--month", type=str, default=None,
+                        help="분석 대상 월 (YYYY-MM). 미입력 시 전체 기간")
+    args = parser.parse_args()
+
     os.makedirs(OUT_DIR, exist_ok=True)
 
     print("=" * 60)
-    print("IT감사 Rule 엔진 시작")
+    label = f"IT감사 Rule 엔진 시작 [{args.month or '전체 기간'}]"
+    print(label)
     print("=" * 60)
 
     # 1. 데이터 로드
     dfs = load_data()
 
-    # 2. rules.json 로드
+    # 2. 월 필터링
+    if args.month:
+        print(f"\n[월 필터링] {args.month}")
+        dfs = filter_by_month(dfs, args.month)
+
+    # 3. rules.json 로드
     with open(RULES_PATH, "r", encoding="utf-8") as f:
         rules = json.load(f)
     print(f"\nrules.json 로드 완료: {len(rules)}개 규칙")
 
-    # 3. 전체 규칙 실행
+    # 4. 전체 규칙 실행
     summary_df, detail_df = run_all_rules(rules, dfs)
 
-    # 4. 결과 출력
+    # 5. 결과 출력
     print_report(summary_df)
 
-    # 5. 저장
-    summary_path = f"{OUT_DIR}/violations_summary.csv"
-    detail_path  = f"{OUT_DIR}/violations_detail.csv"
+    # 6. 저장 (월 지정 시 별도 파일)
+    if args.month:
+        summary_path = os.path.join(OUT_DIR, f"violations_summary_{args.month}.csv")
+    else:
+        summary_path = os.path.join(OUT_DIR, "violations_summary.csv")
+    detail_path = os.path.join(OUT_DIR, "violations_detail.csv")
 
     summary_df.to_csv(summary_path, index=False, encoding="utf-8-sig")
     print(f"\n요약 저장 완료 → {summary_path}")
@@ -283,5 +329,7 @@ if __name__ == "__main__":
         print(f"상세 저장 완료 → {detail_path} ({len(detail_df):,}건)")
     else:
         print("상세 데이터 없음 (pandas_logic이 DataFrame을 반환하지 않는 규칙)")
+
+    print("\nRule 엔진 실행 완료!")
 
     print("\nRule 엔진 실행 완료!")
