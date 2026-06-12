@@ -43,86 +43,113 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ── CSS (라이트 모드 / 모던 카드 디자인) ───────────────────────
+# ── CSS (블루-화이트 글래스모피즘) ─────────────────────────────
 st.markdown("""
 <style>
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
 
 /* ── CSS 변수 ── */
 :root {
-    --primary:      #0284c7;
-    --primary-lt:   #e0f2fe;
-    --primary-dk:   #0c4a6e;
+    --primary:      #2563eb;
+    --primary-lt:   #eff6ff;
+    --primary-dk:   #1e40af;
     --sky:          #0ea5e9;
     --blue:         #2563eb;
     --cyan:         #0891b2;
-    --bg:           #f0f9ff;
-    --card:         #ffffff;
-    --border:       #e0f2fe;
+    --bg:           #f5f9ff;
+    --glass:        rgba(255,255,255,0.62);
+    --glass-border: rgba(255,255,255,0.85);
+    --border:       #dbeafe;
     --text:         #0f172a;
     --text-sub:     #475569;
     --text-muted:   #94a3b8;
-    --sidebar-bg:   #0c1a2e;
-    --sidebar-act:  #0ea5e9;
 }
 
-/* ── 전체 배경 ── */
-html, body, [class*="css"], .stApp {
+/* ── 폰트 ── */
+html, body, [class*="css"], .stApp, .stApp * {
+    font-family: 'Pretendard Variable', Pretendard, 'Inter', -apple-system, sans-serif !important;
+    letter-spacing: -0.01em;
+}
+.fa-solid, .fa-regular, .fa-brands, [class*="fa-"] {
+    font-family: 'Font Awesome 6 Free' !important;
+}
+/* Material 아이콘 폰트 복원 (전역 폰트 강제의 예외) */
+span[data-testid="stIconMaterial"],
+.material-symbols-rounded, .material-symbols-outlined, .material-icons,
+[class*="material-symbols"] {
+    font-family: 'Material Symbols Rounded' !important;
+    letter-spacing: normal !important;
+}
+
+/* ── 전체 배경: 블루-화이트 메시 그라디언트 ── */
+.stApp {
     background-color: var(--bg) !important;
-    font-family: 'Inter', sans-serif !important;
+    background-image:
+        radial-gradient(at 12% 18%, rgba(96,165,250,0.30) 0px, transparent 50%),
+        radial-gradient(at 88% 8%,  rgba(125,211,252,0.35) 0px, transparent 50%),
+        radial-gradient(at 75% 85%, rgba(59,130,246,0.18) 0px, transparent 55%),
+        radial-gradient(at 15% 92%, rgba(186,230,253,0.40) 0px, transparent 50%) !important;
+    background-attachment: fixed !important;
 }
 .main .block-container {
     padding: 1.2rem 1.6rem 1.8rem !important;
     max-width: 100% !important;
 }
 
-/* ── 사이드바 — 다크 네이비 ── */
+/* ── 사이드바 — 화이트 글래스 ── */
 section[data-testid="stSidebar"] {
-    background: var(--sidebar-bg) !important;
-    border-right: none !important;
+    background: rgba(255,255,255,0.55) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    border-right: 1px solid rgba(255,255,255,0.9) !important;
+    box-shadow: 4px 0 24px rgba(37,99,235,0.06) !important;
 }
 section[data-testid="stSidebar"] *,
 section[data-testid="stSidebar"] label,
 section[data-testid="stSidebar"] p,
 section[data-testid="stSidebar"] span {
-    color: rgba(255,255,255,0.75) !important;
+    color: var(--text-sub) !important;
 }
 /* 셀렉트박스 컨테이너 */
 section[data-testid="stSidebar"] .stSelectbox > div > div,
 section[data-testid="stSidebar"] .stMultiSelect > div > div {
-    background: rgba(255,255,255,0.09) !important;
-    border-color: rgba(255,255,255,0.18) !important;
+    background: rgba(255,255,255,0.8) !important;
+    border-color: var(--border) !important;
+    border-radius: 10px !important;
 }
 /* 셀렉트박스 선택된 값 텍스트 */
 section[data-testid="stSidebar"] .stSelectbox [data-baseweb="select"] div,
 section[data-testid="stSidebar"] .stSelectbox [data-baseweb="select"] span,
 section[data-testid="stSidebar"] .stSelectbox input {
-    color: rgba(255,255,255,0.9) !important;
+    color: var(--text) !important;
     background: transparent !important;
 }
 /* 멀티셀렉트 입력 영역 */
 section[data-testid="stSidebar"] .stMultiSelect [data-baseweb="select"] div,
 section[data-testid="stSidebar"] .stMultiSelect input {
-    color: rgba(255,255,255,0.9) !important;
+    color: var(--text) !important;
     background: transparent !important;
 }
 section[data-testid="stSidebar"] hr {
-    border-color: rgba(255,255,255,0.1) !important;
+    border-color: rgba(37,99,235,0.12) !important;
 }
 
-/* ── 카드 ── */
+/* ── 카드 — 글래스 ── */
 .dash-card {
-    background: var(--card);
-    border-radius: 14px;
+    background: var(--glass);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-radius: 20px;
     padding: 1.1rem 1.2rem 1rem;
-    box-shadow: 0 1px 3px rgba(2,132,199,0.06), 0 4px 16px rgba(2,132,199,0.07);
+    box-shadow: 0 8px 32px rgba(37,99,235,0.10);
     margin-bottom: 0.75rem;
-    border: 1px solid var(--border);
+    border: 1px solid var(--glass-border);
     transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 .dash-card:hover {
-    box-shadow: 0 4px 20px rgba(2,132,199,0.13);
+    box-shadow: 0 12px 36px rgba(37,99,235,0.16);
     transform: translateY(-1px);
 }
 .card-title {
@@ -131,16 +158,18 @@ section[data-testid="stSidebar"] hr {
     text-transform: uppercase; letter-spacing: 0.08em;
     margin-bottom: 0.65rem;
     padding-bottom: 0.45rem;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid rgba(37,99,235,0.10);
 }
 
-/* ── KPI 카드 ── */
+/* ── KPI 카드 — 글래스 ── */
 .kpi-box {
-    background: var(--card);
-    border-radius: 14px;
+    background: var(--glass);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-radius: 20px;
     padding: 1rem 1.1rem 0.85rem;
-    box-shadow: 0 1px 3px rgba(2,132,199,0.06), 0 4px 16px rgba(2,132,199,0.07);
-    border: 1px solid var(--border);
+    box-shadow: 0 8px 32px rgba(37,99,235,0.10);
+    border: 1px solid var(--glass-border);
     border-top: 3px solid var(--accent);
     transition: transform 0.18s ease, box-shadow 0.18s ease;
     position: relative; overflow: hidden;
@@ -150,11 +179,11 @@ section[data-testid="stSidebar"] hr {
     position: absolute; top: 0; right: 0;
     width: 60px; height: 60px;
     background: radial-gradient(circle at top right,
-        rgba(14,165,233,0.08), transparent 70%);
+        rgba(37,99,235,0.08), transparent 70%);
 }
 .kpi-box:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(2,132,199,0.15);
+    box-shadow: 0 12px 36px rgba(37,99,235,0.18);
 }
 .kpi-box .val {
     font-size: 2rem; font-weight: 900;
@@ -166,7 +195,7 @@ section[data-testid="stSidebar"] hr {
     text-transform: uppercase; letter-spacing: 0.05em;
 }
 .kpi-box .dl { font-size: 0.71rem; margin-top: 0.2rem; }
-.kpi-box .dl.up   { color: #0284c7; font-weight: 600; }
+.kpi-box .dl.up   { color: #2563eb; font-weight: 600; }
 .kpi-box .dl.down { color: #ef4444; font-weight: 600; }
 
 /* ── 섹션 레이블 ── */
@@ -179,7 +208,7 @@ section[data-testid="stSidebar"] hr {
 }
 .section-label::after {
     content: ''; flex: 1; height: 1px;
-    background: var(--border);
+    background: rgba(37,99,235,0.12);
 }
 
 /* ── 뷰 헤더 ── */
@@ -199,49 +228,55 @@ section[data-testid="stSidebar"] .stButton button {
     background: transparent !important;
     border: none !important;
     border-left: 3px solid transparent !important;
-    color: rgba(255,255,255,0.55) !important;
+    color: var(--text-sub) !important;
     text-align: left !important;
     font-weight: 500 !important;
     font-size: 0.875rem !important;
-    border-radius: 0 8px 8px 0 !important;
+    border-radius: 0 12px 12px 0 !important;
     padding: 0.55rem 0.9rem !important;
     transition: all 0.15s ease !important;
 }
 section[data-testid="stSidebar"] .stButton button:hover {
-    background: rgba(14,165,233,0.12) !important;
-    color: white !important;
-    border-left-color: rgba(14,165,233,0.5) !important;
+    background: rgba(37,99,235,0.08) !important;
+    color: var(--primary) !important;
+    border-left-color: rgba(37,99,235,0.4) !important;
 }
 section[data-testid="stSidebar"] .stButton button[kind="primary"] {
-    background: rgba(14,165,233,0.18) !important;
-    color: #38bdf8 !important;
+    background: rgba(37,99,235,0.10) !important;
+    color: var(--primary) !important;
     font-weight: 700 !important;
-    border-left-color: #0ea5e9 !important;
+    border-left-color: var(--primary) !important;
+    box-shadow: none !important;
+}
+section[data-testid="stSidebar"] .stButton button[kind="primary"] * {
+    color: var(--primary) !important;
 }
 
 /* ── 멀티셀렉트 태그 ── */
 section[data-testid="stSidebar"] span[data-baseweb="tag"] {
-    background-color: rgba(14,165,233,0.25) !important;
-    border-color: rgba(56,189,248,0.4) !important;
+    background-color: rgba(37,99,235,0.12) !important;
+    border-color: rgba(37,99,235,0.25) !important;
 }
 section[data-testid="stSidebar"] span[data-baseweb="tag"] span,
 section[data-testid="stSidebar"] span[data-baseweb="tag"] div {
-    color: #e0f2fe !important;
+    color: var(--primary-dk) !important;
     font-weight: 600 !important;
 }
 section[data-testid="stSidebar"] span[data-baseweb="tag"] svg {
-    fill: #7dd3fc !important;
+    fill: var(--primary) !important;
 }
 
 /* ── 탭 ── */
 .stTabs [data-baseweb="tab-list"] {
     gap: 4px;
-    background: var(--primary-lt);
-    border-radius: 12px;
+    background: rgba(255,255,255,0.5);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.8);
+    border-radius: 14px;
     padding: 5px 6px;
 }
 .stTabs [data-baseweb="tab"] {
-    border-radius: 9px !important;
+    border-radius: 10px !important;
     font-weight: 600 !important;
     font-size: 0.84rem !important;
     color: var(--text-sub) !important;
@@ -252,42 +287,52 @@ section[data-testid="stSidebar"] span[data-baseweb="tag"] svg {
 .stTabs [aria-selected="true"] {
     background: white !important;
     color: var(--primary) !important;
-    box-shadow: 0 1px 6px rgba(2,132,199,0.15) !important;
+    box-shadow: 0 2px 10px rgba(37,99,235,0.15) !important;
 }
 
-/* ── 데이터프레임 ── */
+/* ── 데이터프레임 — 화이트 ── */
 .stDataFrame {
-    border-radius: 12px !important;
+    border-radius: 14px !important;
     overflow: hidden !important;
-    border: 1px solid var(--border) !important;
+    border: 1px solid white !important;
+    background: white !important;
+    box-shadow: 0 2px 12px rgba(37,99,235,0.07) !important;
 }
+.stDataFrame [data-testid="stDataFrameResizable"] { background: white !important; }
 
 /* ── 기본 버튼 (Primary) ── */
-.stButton button[kind="primary"] {
-    background: linear-gradient(135deg, #0284c7, #0ea5e9) !important;
+.main .stButton button[kind="primary"] {
+    background: linear-gradient(135deg, #1e40af, #2563eb 55%, #0ea5e9) !important;
     border: none !important;
-    box-shadow: 0 2px 8px rgba(2,132,199,0.35) !important;
+    border-radius: 12px !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 14px rgba(37,99,235,0.35) !important;
     transition: all 0.15s ease !important;
 }
-.stButton button[kind="primary"]:hover {
-    box-shadow: 0 4px 16px rgba(2,132,199,0.5) !important;
+.main .stButton button[kind="primary"]:hover {
+    box-shadow: 0 6px 20px rgba(37,99,235,0.5) !important;
     transform: translateY(-1px) !important;
 }
 
 /* ── 구분선 ── */
-hr { border-color: var(--border) !important; }
+hr { border-color: rgba(37,99,235,0.10) !important; }
 
 /* ── 알림 ── */
-.stAlert { border-radius: 12px !important; }
+.stAlert { border-radius: 14px !important; }
 
 /* ── Spinner ── */
-.stSpinner > div { border-top-color: var(--sky) !important; }
+.stSpinner > div { border-top-color: var(--primary) !important; }
+
+/* ── 스크롤바 ── */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: rgba(37,99,235,0.25); border-radius: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
 </style>
 """, unsafe_allow_html=True)
 
 # ── Session State ──────────────────────────────────────────────
 _defaults = {
-    "view":           "overview",
+    "view":           "scan",
     "selected_month": AVAILABLE_MONTHS[-1],
     "filter_domains": DOMAIN_ORDER,
     "filter_sevs":    ["HIGH", "MEDIUM", "LOW"],
@@ -909,10 +954,10 @@ def render_sidebar():
         # 로고
         st.markdown("""
         <div style='padding:1rem 0 1.2rem;'>
-          <div style='font-size:1.15rem;font-weight:900;color:white;letter-spacing:-0.03em;'>
-            <i class='fa-solid fa-shield-halved' style='color:#38bdf8;margin-right:7px;'></i>IT<span style='color:#38bdf8;'>감사</span> 시스템
+          <div style='font-size:1.15rem;font-weight:900;color:#0f172a;letter-spacing:-0.03em;'>
+            <i class='fa-solid fa-shield-halved' style='color:#2563eb;margin-right:7px;'></i>IT<span style='color:#2563eb;'>감사</span> 시스템
           </div>
-          <div style='font-size:0.7rem;color:rgba(255,255,255,0.4);margin-top:3px;
+          <div style='font-size:0.7rem;color:#94a3b8;margin-top:3px;
                       font-weight:500;letter-spacing:0.06em;text-transform:uppercase;'>
               AI-Powered Audit Control</div>
         </div>
@@ -921,9 +966,9 @@ def render_sidebar():
         st.markdown("<hr style='margin:0 0 1rem; border-color:#e2e8f0;'>", unsafe_allow_html=True)
 
         # 분석 월
-        st.markdown("<div style='font-size:0.7rem;color:rgba(255,255,255,0.45);font-weight:700;"
+        st.markdown("<div style='font-size:0.7rem;color:#94a3b8;font-weight:700;"
                     "letter-spacing:0.1em;margin-bottom:0.4rem;text-transform:uppercase;'>"
-                    "<i class='fa-regular fa-calendar' style='margin-right:5px;color:#38bdf8;'></i>분석 월</div>",
+                    "<i class='fa-regular fa-calendar' style='margin-right:5px;color:#2563eb;'></i>분석 월</div>",
                     unsafe_allow_html=True)
         sel_month = st.selectbox(
             "month", AVAILABLE_MONTHS,
@@ -937,9 +982,9 @@ def render_sidebar():
         st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
 
         # 도메인 필터
-        st.markdown("<div style='font-size:0.7rem;color:rgba(255,255,255,0.45);font-weight:700;"
+        st.markdown("<div style='font-size:0.7rem;color:#94a3b8;font-weight:700;"
                     "letter-spacing:0.1em;margin-bottom:0.4rem;text-transform:uppercase;'>"
-                    "<i class='fa-solid fa-filter' style='margin-right:5px;'></i>도메인 필터</div>",
+                    "<i class='fa-solid fa-filter' style='margin-right:5px;color:#2563eb;'></i>도메인 필터</div>",
                     unsafe_allow_html=True)
         domains = st.multiselect("domains", DOMAIN_ORDER,
                                  default=st.session_state.filter_domains,
@@ -948,9 +993,9 @@ def render_sidebar():
         st.session_state.filter_domains = domains
 
         # 심각도 필터
-        st.markdown("<div style='font-size:0.7rem;color:rgba(255,255,255,0.45);font-weight:700;"
+        st.markdown("<div style='font-size:0.7rem;color:#94a3b8;font-weight:700;"
                     "letter-spacing:0.1em;text-transform:uppercase;margin:0.8rem 0 0.4rem;'>"
-                    "<i class='fa-solid fa-bolt' style='margin-right:5px;'></i>심각도 필터</div>",
+                    "<i class='fa-solid fa-bolt' style='margin-right:5px;color:#2563eb;'></i>심각도 필터</div>",
                     unsafe_allow_html=True)
         sevs = st.multiselect("sevs", ["HIGH", "MEDIUM", "LOW"],
                               default=st.session_state.filter_sevs,
@@ -966,18 +1011,18 @@ def render_sidebar():
                     "MENU</div>", unsafe_allow_html=True)
 
         nav_items = [
-            ("overview",  "◈  전체 개요"),
-            ("access",    "⊙  접근통제"),
-            ("change",    "⊗  변경관리"),
-            ("ops",       "≡  운영통제"),
-            ("analysis",  "◉  심화 분석"),
-            ("ai",        "◆  AI 분석"),
-            ("scan",      "▷  점검 실행"),
-            ("report",    "☰  보고서 생성"),
+            ("scan",      "점검 실행",   ":material/play_circle:"),
+            ("overview",  "전체 개요",   ":material/dashboard:"),
+            ("access",    "접근통제",   ":material/lock:"),
+            ("change",    "변경관리",   ":material/sync:"),
+            ("ops",       "운영통제",   ":material/dns:"),
+            ("analysis",  "심화 분석",   ":material/insights:"),
+            ("ai",        "AI 분석",    ":material/smart_toy:"),
+            ("report",    "보고서 생성", ":material/description:"),
         ]
-        for key, label in nav_items:
+        for key, label, icon in nav_items:
             is_active = st.session_state.view == key
-            if st.button(label, key=f"nav_{key}",
+            if st.button(label, key=f"nav_{key}", icon=icon,
                          use_container_width=True,
                          type="primary" if is_active else "secondary"):
                 st.session_state.view = key
@@ -985,12 +1030,16 @@ def render_sidebar():
 
         st.markdown("<hr style='margin:1rem 0; border-color:#e2e8f0;'>", unsafe_allow_html=True)
 
-        # 마지막 점검
-        if st.session_state.last_scan:
+        # 마지막 점검 (세션 없으면 결과 파일 수정시각 사용)
+        _last = st.session_state.last_scan
+        if not _last and os.path.exists(SUMMARY_PATH):
+            _last = datetime.fromtimestamp(
+                os.path.getmtime(SUMMARY_PATH)).strftime("%Y-%m-%d %H:%M")
+        if _last:
             st.markdown(
                 f"<div style='font-size:0.72rem;color:#94a3b8;'>"
-                f"마지막 점검<br>"
-                f"<b style='color:#475569;'>{st.session_state.last_scan}</b></div>",
+                f"<i class='fa-regular fa-clock' style='margin-right:5px;color:#2563eb;'></i>마지막 점검<br>"
+                f"<b style='color:#475569;'>{_last}</b></div>",
                 unsafe_allow_html=True)
 
     return sel_month, domains, sevs
@@ -1179,7 +1228,7 @@ def view_overview(month, domains, sevs):
 def view_ai(month):
     df = load_summary(month)
     st.markdown("<div class='view-header'>"
-                "<i class='fa-solid fa-robot' style='color:#6366f1;"
+                "<i class='fa-solid fa-robot' style='color:#2563eb;"
                 "margin-right:8px;font-size:1.1rem;'></i>AI 분석</div>",
                 unsafe_allow_html=True)
     st.markdown(f"<div class='view-sub'>{MONTH_LABELS[month]} 기준 · Claude 기반 감사 인사이트</div>",
@@ -1205,7 +1254,7 @@ def view_ai(month):
             st.markdown(
                 f"<div style='background:white;border-radius:12px;padding:0.9rem 1rem;"
                 f"border:1px solid #e2e8f0;box-shadow:0 1px 4px rgba(0,0,0,0.04);'>"
-                f"<div style='color:#6366f1;font-size:1.2rem;margin-bottom:0.4rem;'>"
+                f"<div style='color:#2563eb;font-size:1.2rem;margin-bottom:0.4rem;'>"
                 f"<i class='fa-solid {icon}'></i></div>"
                 f"<div style='font-size:0.85rem;font-weight:700;color:#1e293b;'>{title}</div>"
                 f"<div style='font-size:0.72rem;color:#94a3b8;margin-top:0.2rem;'>{desc}</div>"
@@ -1577,7 +1626,7 @@ def view_analysis(month):
         if "system_cd" in df.columns:
             df["system_nm"] = df["system_cd"].map(SYS_MAP).fillna(df["system_cd"])
 
-    st.markdown("<div class='view-header'><i class='fa-solid fa-chart-bar' style='color:#6366f1;margin-right:8px;font-size:1.1rem;'></i>심화 분석</div>", unsafe_allow_html=True)
+    st.markdown("<div class='view-header'><i class='fa-solid fa-chart-bar' style='color:#2563eb;margin-right:8px;font-size:1.1rem;'></i>심화 분석</div>", unsafe_allow_html=True)
     st.markdown(f"<div class='view-sub'>{MONTH_LABELS[month]} 기준 · DB 데이터 자동 분석</div>",
                 unsafe_allow_html=True)
 
@@ -1963,7 +2012,7 @@ def view_analysis(month):
             for col, val, lbl, color in [
                 (ck, f"{n_multi}명",  "복합 위반 사용자",    "#ef4444"),
                 (cv, f"{n_3plus}명",  "3개 이상 위반 유형",  "#f59e0b"),
-                (cd, top_dept,         "최다 발생 부서",       "#6366f1"),
+                (cd, top_dept,         "최다 발생 부서",       "#2563eb"),
             ]:
                 with col:
                     st.markdown(
@@ -2006,7 +2055,7 @@ def view_analysis(month):
                 fig_combo = go.Figure(go.Bar(
                     x=combo_cnt["인원"], y=combo_cnt["조합"],
                     orientation="h",
-                    marker=dict(color="#6366f1", opacity=0.8, line=dict(width=0)),
+                    marker=dict(color="#2563eb", opacity=0.8, line=dict(width=0)),
                     text=[f"{v}명" for v in combo_cnt["인원"]],
                     textposition="outside",
                     textfont=dict(size=11, color="#334155"),
@@ -2054,7 +2103,7 @@ def view_scan(month):
                   count_month(df_bak,  "backup_dt") +
                   count_month(df_itsm, "request_dt"))
 
-    st.markdown("<div class='view-header'><i class='fa-solid fa-circle-play' style='color:#6366f1;margin-right:8px;font-size:1.1rem;'></i>점검 실행</div>", unsafe_allow_html=True)
+    st.markdown("<div class='view-header'><i class='fa-solid fa-circle-play' style='color:#2563eb;margin-right:8px;font-size:1.1rem;'></i>점검 실행</div>", unsafe_allow_html=True)
     st.markdown(f"<div class='view-sub'>분석 월: {MONTH_LABELS[month]}</div>",
                 unsafe_allow_html=True)
 
@@ -2062,7 +2111,7 @@ def view_scan(month):
     c1, c2, c3, c4 = st.columns(4)
     for col, val, lbl, color in [
         (c1, f"{total_logs:,}건", "분석 대상 로그", "#3b82f6"),
-        (c2, f"{rules_count}개", "점검 규칙",    "#6366f1"),
+        (c2, f"{rules_count}개", "점검 규칙",    "#2563eb"),
         (c3, dt_from,            "시작일",        "#10b981"),
         (c4, dt_to,              "종료일",        "#f59e0b"),
     ]:
@@ -2158,7 +2207,7 @@ def view_scan(month):
 # ════════════════════════════════════════════════════════════════
 def view_report(month):
     df = load_summary(month)
-    st.markdown("<div class='view-header'><i class='fa-solid fa-file-lines' style='color:#6366f1;margin-right:8px;font-size:1.1rem;'></i>보고서 생성</div>", unsafe_allow_html=True)
+    st.markdown("<div class='view-header'><i class='fa-solid fa-file-lines' style='color:#2563eb;margin-right:8px;font-size:1.1rem;'></i>보고서 생성</div>", unsafe_allow_html=True)
     if df is None:
         st.warning("점검 결과 없음 — '점검 실행' 메뉴에서 먼저 점검을 실행해주세요.")
         return

@@ -15,7 +15,7 @@ DATA_DIR  = os.path.join(BASE_DIR, "data", "processed")
 DB_DIR    = os.path.join(DATA_DIR, "virtual_db")
 SRC_DIR   = os.path.join(BASE_DIR, "src")
 
-DOMAIN_COLORS = {"접근통제":"#6366f1","변경관리":"#f59e0b","운영통제":"#10b981"}
+DOMAIN_COLORS = {"접근통제":"#2563eb","변경관리":"#f59e0b","운영통제":"#10b981"}
 SEV_COLORS    = {"HIGH":"#ef4444","MEDIUM":"#f59e0b","LOW":"#10b981"}
 SYS_MAP       = {"CRED":"신용평가시스템","PORTAL":"고객포털",
                  "ERP":"경영관리시스템","DW":"데이터웨어하우스","DEVP":"ITSM"}
@@ -79,31 +79,37 @@ def risk_score_df(df):
     d["gcolor"] = d["grade"].map(GRADE_COLORS)
     return d
 
-# ── 공통 스타일 ────────────────────────────────────────────────
+# ── 공통 스타일 (글래스모피즘) ─────────────────────────────────
 CARD = {
-    "background":"white","borderRadius":"16px",
+    "background":"rgba(255,255,255,0.62)",
+    "backdropFilter":"blur(18px)","WebkitBackdropFilter":"blur(18px)",
+    "borderRadius":"20px",
     "padding":"1.25rem 1.4rem",
-    "boxShadow":"0 1px 4px rgba(0,0,0,0.04),0 6px 20px rgba(0,0,0,0.06)",
-    "border":"1px solid #f1f5f9","marginBottom":"1rem",
+    "boxShadow":"0 8px 32px rgba(37,99,235,0.10)",
+    "border":"1px solid rgba(255,255,255,0.85)","marginBottom":"1rem",
 }
 SIDEBAR = {
     "position":"fixed","top":0,"left":0,"bottom":0,"width":"220px",
-    "padding":"1.4rem 0.9rem","background":"white",
-    "borderRight":"1px solid #e2e8f0","overflowY":"auto","zIndex":200,
+    "padding":"1.4rem 0.9rem",
+    "background":"rgba(255,255,255,0.55)",
+    "backdropFilter":"blur(24px)","WebkitBackdropFilter":"blur(24px)",
+    "borderRight":"1px solid rgba(255,255,255,0.9)",
+    "boxShadow":"4px 0 24px rgba(37,99,235,0.06)",
+    "overflowY":"auto","zIndex":200,
 }
 CONTENT = {
     "marginLeft":"220px","padding":"1.4rem",
-    "background":"#f1f5f9","minHeight":"100vh",
+    "background":"transparent","minHeight":"100vh",
 }
-def chart_base(h=300, legend=False, bg="white"):
+def chart_base(h=300, legend=False, bg="rgba(0,0,0,0)"):
     return dict(
         height=h, showlegend=legend,
         margin=dict(l=10,r=55,t=10,b=10),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor=bg,
-        font=dict(family="Inter,sans-serif",color="#64748b",size=11),
-        xaxis=dict(gridcolor="#f8fafc",linecolor="#e2e8f0",tickfont=dict(size=10),fixedrange=True),
-        yaxis=dict(gridcolor="#f8fafc",linecolor="#e2e8f0",tickfont=dict(size=10),fixedrange=True),
+        font=dict(family="'Pretendard Variable',Pretendard,Inter,sans-serif",color="#64748b",size=11),
+        xaxis=dict(gridcolor="rgba(37,99,235,0.07)",linecolor="rgba(37,99,235,0.15)",tickfont=dict(size=10),fixedrange=True),
+        yaxis=dict(gridcolor="rgba(37,99,235,0.07)",linecolor="rgba(37,99,235,0.15)",tickfont=dict(size=10),fixedrange=True),
         dragmode=False,
         modebar=dict(remove=["zoom","pan","select","lasso2d","zoomIn2d","zoomOut2d","autoScale2d","resetScale2d"]),
     )
@@ -118,7 +124,7 @@ def badge(text, color):
     bg = {"red":"#fef2f2","orange":"#fff7ed","green":"#f0fdf4",
           "blue":"#eff6ff","purple":"#f5f3ff","gray":"#f8fafc"}
     fg = {"red":"#ef4444","orange":"#f59e0b","green":"#10b981",
-          "blue":"#3b82f6","purple":"#6366f1","gray":"#94a3b8"}
+          "blue":"#3b82f6","purple":"#2563eb","gray":"#94a3b8"}
     return html.Span(text, style={
         "background":bg.get(color,"#f1f5f9"),"color":fg.get(color,"#64748b"),
         "borderRadius":"999px","padding":"0.2rem 0.6rem",
@@ -129,7 +135,7 @@ def kpi(value, label, color, delta=None):
     return html.Div([
         html.Div(str(value), style={
             "fontSize":"2.1rem","fontWeight":"900","color":color,
-            "lineHeight":"1.1","fontFamily":"Inter,sans-serif",
+            "lineHeight":"1.1","fontFamily":"'Pretendard Variable',Pretendard,Inter,sans-serif",
         }),
         html.Div(label, style={
             "fontSize":"0.72rem","color":"#94a3b8","fontWeight":"600",
@@ -154,7 +160,7 @@ def hero(month, df):
             dbc.Col([
                 html.H3("IT감사 통제 점검", style={
                     "fontWeight":"900","color":"white","marginBottom":"0.25rem",
-                    "fontFamily":"Inter,sans-serif","fontSize":"1.6rem",
+                    "fontFamily":"'Pretendard Variable',Pretendard,Inter,sans-serif","fontSize":"1.6rem",
                 }),
                 html.P(f"{mlabel} 기준  ·  AI Rule 엔진 자동 탐지",
                        style={"color":"rgba(255,255,255,0.78)","fontSize":"0.88rem","marginBottom":0}),
@@ -170,129 +176,154 @@ def hero(month, df):
             ], width=7),
         ])
     ], style={
-        "background":"linear-gradient(135deg,#4f46e5 0%,#3b82f6 55%,#0891b2 100%)",
-        "borderRadius":"20px","padding":"1.6rem 2rem","marginBottom":"1.2rem",
-        "boxShadow":"0 8px 30px rgba(99,102,241,0.25)",
+        "background":"linear-gradient(135deg,#1e40af 0%,#2563eb 45%,#0ea5e9 100%)",
+        "borderRadius":"22px","padding":"1.6rem 2rem","marginBottom":"1.2rem",
+        "boxShadow":"0 12px 36px rgba(37,99,235,0.30)",
+        "border":"1px solid rgba(255,255,255,0.25)",
     })
 
 # ── Dash 앱 ───────────────────────────────────────────────────
 app = Dash(__name__,
     external_stylesheets=[
         dbc.themes.BOOTSTRAP,
+        dbc.icons.BOOTSTRAP,
         "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap",
+        "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css",
     ],
     suppress_callback_exceptions=True,
 )
 app.title = "AI IT감사 점검 시스템"
 
+# 글래스모피즘 배경 (블루-화이트 메시 그라디언트)
+app.index_string = """<!DOCTYPE html>
+<html>
+<head>
+{%metas%}
+<title>{%title%}</title>
+{%favicon%}
+{%css%}
+<style>
+* { font-family: 'Pretendard Variable', Pretendard, Inter, -apple-system, sans-serif; }
+body {
+  margin: 0;
+  letter-spacing: -0.01em;
+  background-color: #f5f9ff;
+  background-image:
+    radial-gradient(at 12% 18%, rgba(96,165,250,0.30) 0px, transparent 50%),
+    radial-gradient(at 88% 8%,  rgba(125,211,252,0.35) 0px, transparent 50%),
+    radial-gradient(at 75% 85%, rgba(59,130,246,0.18) 0px, transparent 55%),
+    radial-gradient(at 15% 92%, rgba(186,230,253,0.40) 0px, transparent 50%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: rgba(37,99,235,0.25); border-radius: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+.table { background: white !important; border-radius: 14px; overflow: hidden;
+         box-shadow: 0 2px 12px rgba(37,99,235,0.06); }
+.table thead th { background: #eff6ff !important; color: #1e40af !important;
+                  font-weight: 700; font-size: 0.8rem; border-bottom: 2px solid #dbeafe !important; }
+.table tbody tr { background: white !important; }
+.table tbody tr:nth-of-type(odd) { background: #fafcff !important; }
+.table tbody tr:hover { background: #eff6ff !important; }
+.table td, .table th { border-color: #f1f5f9 !important; vertical-align: middle; }
+</style>
+</head>
+<body>
+{%app_entry%}
+<footer>
+{%config%}
+{%scripts%}
+{%renderer%}
+</footer>
+</body>
+</html>"""
+
 NAV_PAGES = [
-    ("overview","전체 개요"),("access","접근통제"),("change","변경관리"),
-    ("ops","운영통제"),("analysis","심화 분석"),("scan","점검 실행"),("report","보고서"),
+    ("scan","점검 실행","bi-play-circle"),
+    ("overview","전체 개요","bi-grid-1x2"),
+    ("access","접근통제","bi-shield-lock"),
+    ("change","변경관리","bi-arrow-repeat"),
+    ("ops","운영통제","bi-hdd-stack"),
+    ("analysis","심화 분석","bi-graph-up-arrow"),
+    ("report","보고서","bi-file-earmark-text"),
 ]
 
-def sidebar(active):
-    links = []
-    for key, label in NAV_PAGES:
-        is_active = key == active
-        links.append(html.Div(label, id=f"nav-{key}", n_clicks=0, style={
-            "padding":"0.55rem 0.85rem","borderRadius":"10px","marginBottom":"3px",
-            "fontSize":"0.87rem","fontWeight":"700" if is_active else "500",
-            "cursor":"pointer","color":"#3b82f6" if is_active else "#64748b",
-            "background":"#eff6ff" if is_active else "transparent",
-            "borderLeft":f"3px solid #6366f1" if is_active else "3px solid transparent",
-            "transition":"all 0.15s",
-        }))
-
-    month_opts = [{"label":MONTH_LABELS.get(m,m),"value":m} for m in MONTHS]
-    default_m  = MONTHS[-1] if MONTHS else None
-
-    return html.Div([
-        html.Div([
-            html.Span("IT", style={"color":"#6366f1","fontWeight":"900","fontSize":"1.2rem"}),
-            html.Span("감사", style={"color":"#1e293b","fontWeight":"900","fontSize":"1.2rem"}),
-        ], style={"marginBottom":"0.2rem","fontFamily":"Inter,sans-serif"}),
-        html.P("AI-Powered Audit Control",
-               style={"color":"#94a3b8","fontSize":"0.7rem","marginBottom":"1.2rem"}),
-        html.Hr(style={"borderColor":"#e2e8f0","margin":"0 0 1rem"}),
-
-        html.P("분석 월", style={"color":"#94a3b8","fontSize":"0.7rem","fontWeight":"700",
-                                "letterSpacing":"0.08em","marginBottom":"0.35rem"}),
-        dcc.Dropdown(id="month-dd", options=month_opts, value=default_m,
-                     clearable=False,
-                     style={"fontSize":"0.84rem","marginBottom":"1.1rem",
-                            "borderRadius":"10px"}),
-        html.Hr(style={"borderColor":"#e2e8f0","margin":"0 0 0.8rem"}),
-        html.P("MENU", style={"color":"#cbd5e1","fontSize":"0.68rem","fontWeight":"700",
-                              "letterSpacing":"0.1em","marginBottom":"0.5rem"}),
-        *links,
-        html.Hr(style={"borderColor":"#e2e8f0","margin":"1rem 0 0.5rem"}),
-        html.Div(id="sidebar-scan-time",
-                 style={"color":"#94a3b8","fontSize":"0.7rem","lineHeight":"1.5"}),
-    ], style=SIDEBAR)
+def last_scan_time():
+    """violations_summary.csv 수정 시각 = 마지막 점검 실행 시각"""
+    p = os.path.join(DATA_DIR, "violations_summary.csv")
+    if os.path.exists(p):
+        return datetime.fromtimestamp(os.path.getmtime(p)).strftime("%Y-%m-%d %H:%M")
+    return None
 
 DEFAULT_MONTH = MONTHS[-1] if MONTHS else None
 
+def nav_style(active):
+    return {
+        "padding":"0.55rem 0.85rem","borderRadius":"12px","marginBottom":"3px",
+        "fontSize":"0.87rem","fontWeight":"700" if active else "500",
+        "cursor":"pointer","color":"#2563eb" if active else "#64748b",
+        "background":"rgba(37,99,235,0.10)" if active else "transparent",
+        "borderLeft":"3px solid #2563eb" if active else "3px solid transparent",
+        "transition":"all 0.15s",
+    }
+
 def make_layout():
     month_opts = [{"label": MONTH_LABELS.get(m,m), "value": m} for m in MONTHS]
-    nav_links = []
-    for key, label in NAV_PAGES:
-        is_active = key == "scan"
-        nav_links.append(html.Div(label, id=f"nav-{key}", n_clicks=0, style={
-            "padding":"0.55rem 0.85rem","borderRadius":"10px","marginBottom":"3px",
-            "fontSize":"0.87rem","fontWeight":"700" if is_active else "500",
-            "cursor":"pointer","color":"#3b82f6" if is_active else "#64748b",
-            "background":"#eff6ff" if is_active else "transparent",
-            "borderLeft":"3px solid #6366f1" if is_active else "3px solid transparent",
-        }))
+    nav_links = [
+        html.Div([
+            html.I(className=f"bi {icon}", style={"marginRight":"0.6rem","fontSize":"0.95rem"}),
+            label,
+        ], id=f"nav-{key}", n_clicks=0, style=nav_style(key == "scan"))
+        for key, label, icon in NAV_PAGES
+    ]
+    scan_t = last_scan_time()
     sidebar_el = html.Div([
         html.Div([
-            html.Span("IT", style={"color":"#6366f1","fontWeight":"900","fontSize":"1.2rem"}),
+            html.Span("IT", style={"color":"#2563eb","fontWeight":"900","fontSize":"1.2rem"}),
             html.Span("감사", style={"color":"#1e293b","fontWeight":"900","fontSize":"1.2rem"}),
-        ], style={"marginBottom":"0.2rem","fontFamily":"Inter,sans-serif"}),
+        ], style={"marginBottom":"0.2rem","fontFamily":"'Pretendard Variable',Pretendard,Inter,sans-serif"}),
         html.P("AI-Powered Audit Control",
                style={"color":"#94a3b8","fontSize":"0.7rem","marginBottom":"1.2rem"}),
-        html.Hr(style={"borderColor":"#e2e8f0","margin":"0 0 1rem"}),
+        html.Hr(style={"borderColor":"rgba(37,99,235,0.12)","margin":"0 0 1rem"}),
         html.P("분석 월", style={"color":"#94a3b8","fontSize":"0.7rem","fontWeight":"700",
                                 "letterSpacing":"0.08em","marginBottom":"0.35rem"}),
         dcc.Dropdown(id="month-dd", options=month_opts, value=DEFAULT_MONTH,
                      clearable=False,
                      style={"fontSize":"0.84rem","marginBottom":"1.1rem","borderRadius":"10px"}),
-        html.Hr(style={"borderColor":"#e2e8f0","margin":"0 0 0.8rem"}),
-        html.P("MENU", style={"color":"#cbd5e1","fontSize":"0.68rem","fontWeight":"700",
+        html.Hr(style={"borderColor":"rgba(37,99,235,0.12)","margin":"0 0 0.8rem"}),
+        html.P("MENU", style={"color":"#94a3b8","fontSize":"0.68rem","fontWeight":"700",
                               "letterSpacing":"0.1em","marginBottom":"0.5rem"}),
         *nav_links,
+        html.Hr(style={"borderColor":"rgba(37,99,235,0.12)","margin":"1rem 0 0.5rem"}),
+        html.Div([
+            html.Div("마지막 점검", style={"fontWeight":"700","marginBottom":"0.15rem"}),
+            html.Div(scan_t if scan_t else "실행 이력 없음"),
+        ], id="sidebar-scan-time",
+           style={"color":"#94a3b8","fontSize":"0.7rem","lineHeight":"1.5",
+                  "padding":"0.5rem 0.85rem"}),
     ], style=SIDEBAR)
     return html.Div([
         dcc.Store(id="page-store", data="scan"),
         sidebar_el,
-        dcc.Loading(id="loading-main", type="circle", color="#6366f1", children=html.Div(id="main-content", style=CONTENT)),
-    ], style={"fontFamily":"Inter,sans-serif"})
+        dcc.Loading(id="loading-main", type="circle", color="#2563eb", children=html.Div(id="main-content", style=CONTENT)),
+    ], style={"fontFamily":"'Pretendard Variable',Pretendard,Inter,sans-serif"})
 
 app.layout = make_layout
 
 # ── 네비 스타일 업데이트 ──────────────────────────────────────
 @app.callback(
-    [Output(f"nav-{k}","style") for k,_ in NAV_PAGES],
+    [Output(f"nav-{k}","style") for k,*_ in NAV_PAGES],
     Input("page-store","data"),
 )
 def update_nav(page):
     page = page or "scan"
-    styles = []
-    for key, _ in NAV_PAGES:
-        active = key == page
-        styles.append({
-            "padding":"0.55rem 0.85rem","borderRadius":"10px","marginBottom":"3px",
-            "fontSize":"0.87rem","fontWeight":"700" if active else "500",
-            "cursor":"pointer","color":"#3b82f6" if active else "#64748b",
-            "background":"#eff6ff" if active else "transparent",
-            "borderLeft":"3px solid #6366f1" if active else "3px solid transparent",
-        })
-    return styles
+    return [nav_style(key == page) for key, *_ in NAV_PAGES]
 
 # ── 라우팅 ────────────────────────────────────────────────────
 @app.callback(
     Output("page-store","data"),
-    [Input(f"nav-{k}","n_clicks") for k,_ in NAV_PAGES],
+    [Input(f"nav-{k}","n_clicks") for k,*_ in NAV_PAGES],
     prevent_initial_call=True,
 )
 def route(*_):
@@ -356,7 +387,7 @@ def pg_overview(df, month):
 
     fig_dom = go.Figure()
     for _, r in dom.iterrows():
-        c = DOMAIN_COLORS.get(r["audit_domain"],"#6366f1")
+        c = DOMAIN_COLORS.get(r["audit_domain"],"#2563eb")
         fig_dom.add_trace(go.Bar(
             name=r["audit_domain"], x=[r["위반"]], y=[r["audit_domain"]],
             orientation="h", marker_color=c, marker_opacity=0.9,
@@ -448,7 +479,7 @@ def pg_overview(df, month):
 
         # KPI 행
         dbc.Row([
-            dbc.Col(kpi(f"{total}개","총 점검 규칙","#6366f1"), md=3),
+            dbc.Col(kpi(f"{total}개","총 점검 규칙","#2563eb"), md=3),
             dbc.Col(kpi(f"{viol}개","위반 탐지","#ef4444",f"전체의 {round(viol/total*100)}%"), md=3),
             dbc.Col(kpi(f"{high}개","HIGH 위반","#f59e0b","즉각 조치 필요"), md=3),
             dbc.Col(kpi(f"{clean}개","이상 없음","#10b981",f"준수율 {round(clean/total*100)}%"), md=3),
@@ -497,7 +528,7 @@ def pg_domain(df, month, domain):
     viol = sub[sub["yn_violation"]=="Y"]
     total = len(sub); vc = len(viol)
     pass_rate = round((total-vc)/total*100) if total else 0
-    color = DOMAIN_COLORS.get(domain,"#6366f1")
+    color = DOMAIN_COLORS.get(domain,"#2563eb")
 
     # 심각도 파이
     sv = (viol.groupby("severity")["rule_id"].count()
@@ -567,7 +598,7 @@ def pg_domain(df, month, domain):
             dbc.Col(kpi(f"{total}개","점검 규칙",color), md=3),
             dbc.Col(kpi(f"{vc}개","위반 탐지","#ef4444"), md=3),
             dbc.Col(kpi(f"{total-vc}개","이상 없음","#10b981"), md=3),
-            dbc.Col(kpi(f"{pass_rate}%","준수율","#6366f1"), md=3),
+            dbc.Col(kpi(f"{pass_rate}%","준수율","#2563eb"), md=3),
         ], className="g-3 mb-2"),
 
         dbc.Row([
@@ -632,7 +663,7 @@ def pg_analysis(df, month):
     fig_dept = go.Figure(go.Bar(
         x=td["위험점수"], y=td["dept_nm"],
         orientation="h",
-        marker_color=["#ef4444" if s>=10 else "#f59e0b" if s>=5 else "#6366f1" for s in td["위험점수"]],
+        marker_color=["#ef4444" if s>=10 else "#f59e0b" if s>=5 else "#2563eb" for s in td["위험점수"]],
         text=td["위험점수"], textposition="outside",
     ))
     fig_dept.update_layout(**chart_base(h=300, legend=False))
@@ -713,49 +744,93 @@ def pg_analysis(df, month):
 # ══════════════════════════════════════════════════════════════
 def pg_scan(month):
     mlabel = MONTH_LABELS.get(month,month) if month else "-"
+    scan_t = last_scan_time()
+    last_df = load_summary(month)
+    last_summary = None
+    if last_df is not None:
+        v = int((last_df["yn_violation"]=="Y").sum())
+        h = int(((last_df["severity"]=="HIGH")&(last_df["yn_violation"]=="Y")).sum())
+        last_summary = f"위반 {v}건 탐지 (HIGH {h}건)"
+
     return html.Div([
-        html.H4("점검 실행", style={"fontWeight":"800","color":"#0f172a","marginBottom":"0.2rem"}),
-        html.P("Rule 엔진을 실행하여 위반 사항을 자동 탐지합니다",
-               style={"color":"#94a3b8","fontSize":"0.83rem","marginBottom":"1rem"}),
+        # 히어로: 점검 상태
+        html.Div([
+            dbc.Row([
+                dbc.Col([
+                    html.H3("IT감사 통제 점검", style={
+                        "fontWeight":"900","color":"white","marginBottom":"0.3rem",
+                        "fontFamily":"'Pretendard Variable',Pretendard,Inter,sans-serif","fontSize":"1.6rem"}),
+                    html.P("Rule 엔진을 실행하여 위반 사항을 자동 탐지합니다",
+                           style={"color":"rgba(255,255,255,0.8)","fontSize":"0.88rem","marginBottom":"0.8rem"}),
+                    html.Div([
+                        html.Span("● ", style={"color":"#6ee7b7" if scan_t else "#fde68a"}),
+                        html.Span(
+                            f"마지막 점검  {scan_t}  ·  {last_summary}" if scan_t and last_summary
+                            else (f"마지막 점검  {scan_t}" if scan_t else "아직 점검을 실행한 이력이 없습니다"),
+                            style={"color":"rgba(255,255,255,0.9)","fontSize":"0.84rem","fontWeight":"600"}),
+                    ], style={
+                        "background":"rgba(255,255,255,0.15)","backdropFilter":"blur(8px)",
+                        "borderRadius":"999px","padding":"0.4rem 1rem","display":"inline-block",
+                        "border":"1px solid rgba(255,255,255,0.25)"}),
+                ], width=8),
+                dbc.Col([
+                    dbc.Button([html.I(className="bi bi-play-fill", style={"marginRight":"0.4rem"}),"점검 실행"],
+                        id="scan-btn", size="lg", style={
+                        "borderRadius":"14px","fontWeight":"800","padding":"0.85rem 2.8rem",
+                        "background":"white","color":"#2563eb","border":"none",
+                        "boxShadow":"0 8px 24px rgba(0,0,0,0.18)","fontSize":"1.05rem"}),
+                ], width=4, style={"display":"flex","alignItems":"center","justifyContent":"flex-end"}),
+            ]),
+        ], style={
+            "background":"linear-gradient(135deg,#1e40af 0%,#2563eb 45%,#0ea5e9 100%)",
+            "borderRadius":"22px","padding":"2rem 2.2rem","marginBottom":"1.2rem",
+            "boxShadow":"0 12px 36px rgba(37,99,235,0.30)",
+            "border":"1px solid rgba(255,255,255,0.25)",
+        }),
+        html.Div(id="scan-result", style={"marginBottom":"1rem"}),
+
         dbc.Row([
-            dbc.Col(kpi("70개","점검 규칙","#6366f1"),md=3),
+            dbc.Col(kpi("70개","점검 규칙","#2563eb"),md=3),
             dbc.Col(kpi("3개","점검 도메인","#3b82f6"),md=3),
-            dbc.Col(kpi("6개","분석 테이블","#10b981"),md=3),
+            dbc.Col(kpi("6개","분석 테이블","#0ea5e9"),md=3),
             dbc.Col(kpi(mlabel,"선택 월","#f59e0b"),md=3),
         ],className="g-3 mb-3"),
+
         dbc.Row([
-            dbc.Col(dbc.Card([dbc.CardBody([
-                html.H6("접근통제",className="fw-bold"),
-                html.P("계정·권한·퇴직자 관리",className="text-muted small mb-0"),
-            ])],outline=True,color="primary"),md=4),
-            dbc.Col(dbc.Card([dbc.CardBody([
-                html.H6("변경관리",className="fw-bold"),
-                html.P("CR·배포·직무분리",className="text-muted small mb-0"),
-            ])],outline=True,color="warning"),md=4),
-            dbc.Col(dbc.Card([dbc.CardBody([
-                html.H6("운영통제",className="fw-bold"),
-                html.P("로그·백업·권한검토",className="text-muted small mb-0"),
-            ])],outline=True,color="success"),md=4),
-        ],className="g-3 mb-3"),
-        html.Div([
-            dbc.Button("점검 실행", id="scan-btn", color="primary", size="lg",
-                       style={"borderRadius":"12px","fontWeight":"700","padding":"0.75rem 3rem"}),
-            html.Div(id="scan-result",style={"marginTop":"1rem"}),
-        ],style={**CARD,"textAlign":"center","padding":"2rem"}),
+            dbc.Col(html.Div([
+                card_title("접근통제"),
+                html.P("계정·권한·퇴직자 관리", style={"color":"#475569","fontSize":"0.88rem","marginBottom":0}),
+            ], style={**CARD,"borderTop":"3px solid #2563eb"}),md=4),
+            dbc.Col(html.Div([
+                card_title("변경관리"),
+                html.P("CR·배포·직무분리", style={"color":"#475569","fontSize":"0.88rem","marginBottom":0}),
+            ], style={**CARD,"borderTop":"3px solid #f59e0b"}),md=4),
+            dbc.Col(html.Div([
+                card_title("운영통제"),
+                html.P("로그·백업·권한검토", style={"color":"#475569","fontSize":"0.88rem","marginBottom":0}),
+            ], style={**CARD,"borderTop":"3px solid #10b981"}),md=4),
+        ],className="g-3"),
     ])
 
-@app.callback(Output("scan-result","children"), Input("scan-btn","n_clicks"),
+@app.callback([Output("scan-result","children"), Output("sidebar-scan-time","children")],
+              Input("scan-btn","n_clicks"),
               prevent_initial_call=True)
 def run_scan(n):
-    if not n: return no_update
+    if not n: return no_update, no_update
+    sidebar_time = lambda: [
+        html.Div("마지막 점검", style={"fontWeight":"700","marginBottom":"0.15rem"}),
+        html.Div(last_scan_time() or "실행 이력 없음"),
+    ]
     try:
         r = subprocess.run([sys.executable, os.path.join(SRC_DIR,"rule_engine.py")],
                            capture_output=True, text=True, timeout=120, cwd=BASE_DIR)
         if r.returncode==0:
-            return dbc.Alert("점검 완료! 좌측 메뉴에서 결과를 확인하세요.",color="success",style={"borderRadius":"10px"})
-        return dbc.Alert(f"오류: {r.stderr[:300]}",color="danger",style={"borderRadius":"10px"})
+            return (dbc.Alert(f"점검 완료! ({last_scan_time()})  좌측 메뉴에서 결과를 확인하세요.",
+                              color="success",style={"borderRadius":"12px"}),
+                    sidebar_time())
+        return dbc.Alert(f"오류: {r.stderr[:300]}",color="danger",style={"borderRadius":"12px"}), sidebar_time()
     except Exception as e:
-        return dbc.Alert(str(e),color="danger",style={"borderRadius":"10px"})
+        return dbc.Alert(str(e),color="danger",style={"borderRadius":"12px"}), no_update
 
 # ══════════════════════════════════════════════════════════════
 # 보고서
@@ -769,7 +844,7 @@ def pg_report(df, month):
         html.P("AI 분석이 포함된 Excel·Word 보고서를 자동 생성합니다",
                style={"color":"#94a3b8","fontSize":"0.83rem","marginBottom":"1rem"}),
         dbc.Row([
-            dbc.Col(kpi(f"{total}개","점검 규칙","#6366f1"),md=3),
+            dbc.Col(kpi(f"{total}개","점검 규칙","#2563eb"),md=3),
             dbc.Col(kpi(f"{viol}개","위반 탐지","#ef4444"),md=3),
             dbc.Col(kpi(datetime.now().strftime("%Y.%m.%d"),"기준일","#10b981"),md=3),
             dbc.Col(kpi("Claude AI","분석 엔진","#f59e0b"),md=3),
