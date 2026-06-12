@@ -1,0 +1,170 @@
+{
+  "collected_at": "2026-06-10T00:49:58.586672",
+  "total": 10,
+  "source": "금융감독원 제재관련공시 (공공누리 제1유형)",
+  "source_url": "https://www.fss.or.kr/fss/job/openInfo/list.do?menuNo=200476",
+  "items": [
+    {
+      "seq": "5190",
+      "institution": "한화생명보험주식회사",
+      "date": "20260521",
+      "department": "IT검사국",
+      "detail_url": "https://www.fss.or.kr/fss/job/openInfo/view.do?menuNo=200476&sdate=2012-01-01&edate=2026-06-10&pageIndex=1&examMgmtNo=202300039&emOpenSeq=2",
+      "exam_mgmt_no": "202300039",
+      "em_open_seq": "2",
+      "pdf_urls": [
+        "https://www.fss.or.kr/fss.hpdownload?path=/dtm/opn/&file=202300039_02_%ED%95%9C%ED%99%94%EC%83%9D%EB%AA%85%EB%B3%B4%ED%97%98%E3%88%9C+2023%EB%85%84+%EC%88%98%EC%8B%9C%EA%B2%80%EC%82%AC+%EC%A0%9C%EC%9E%AC%EB%82%B4%EC%9A%A9+%EA%B3%B5%EA%B0%9C%EC%95%88+20260526_FF.pdf"
+      ],
+      "source": "금융감독원 제재관련공시 (https://www.fss.or.kr)",
+      "pdf_text_snippet": "가. 전자금융거래의 안전성 확보 의무 위반\n(1) 정보처리시스템 재개발시 통제절차 등 보호대책 위반\n(舊) ｢전자금융감독규정｣ 제14조 제5호에 의하면 금융회사는 정보처리시스템의 안전한\n운영을 위하여 시스템 재개발 시 전산장애로 인해 시스템 운영에 지장을 초래하지 않도록\n회사는 차세대시스템 구축과정에서 퇴직연금 이관 데이터에 대한 정합성 검증을\n그 결과 오류를 복구하는 과정에서 퇴직연금 조회·청구 등 관련 전자금융업무가\n또한 회사는 차세대시스템 구축과정에서 신규 서버 시스템의 정상가동여부에 대한\n준수하지 아니하여, 오픈 후 시스템 과부하로 인한 전자금융업무(홈페이지·모바일을\n(舊) ｢전자금융감독규정｣ 제29조 제6호에 의하면 금융회사는 프로그램을 운영시스템에\n회사는 차세대 시스템에 적용될 전자금융 관련 프로그램 테스트를 미흡하게 실시\n하여 시스템 오픈 이후 약 3개월간(2022.9.13. ~ 12.14.) ①보험료 출금오류, ②보험금\n1. ｢전자금융거래법｣ 제21조 제2항\n2. (舊) ｢전자금융 감독규정｣ 제7조\n3. (舊) ｢전자금융 감독규정｣ 제14조 제5호\n4. (舊) ｢전자금융 감독규정｣ 제29조 제6호",
+      "violations": [
+        "보험료 출금오류, ②보험금"
+      ]
+    },
+    {
+      "seq": "5184",
+      "institution": "한국투자증권",
+      "date": "20260515",
+      "department": "IT검사국",
+      "detail_url": "https://www.fss.or.kr/fss/job/openInfo/view.do?menuNo=200476&sdate=2012-01-01&edate=2026-06-10&pageIndex=2&examMgmtNo=202200403&emOpenSeq=8",
+      "exam_mgmt_no": "202200403",
+      "em_open_seq": "8",
+      "pdf_urls": [
+        "https://www.fss.or.kr/fss.hpdownload?path=/dtm/opn/&file=202200403_08_%ED%95%9C%EA%B5%AD%ED%88%AC%EC%9E%90%EC%A6%9D%EA%B6%8C+%EC%A0%9C%EC%9E%AC%EB%82%B4%EC%9A%A9+%EA%B3%B5%EA%B0%9C%EC%95%88.pdf"
+      ],
+      "source": "금융감독원 제재관련공시 (https://www.fss.or.kr)",
+      "pdf_text_snippet": "(1) 전자금융거래의 안전성 확보 의무 위반\n｢전자금융거래법｣ 제21조 제2항, (舊)｢전자금융감독규정」제7조 제3호, 제29조 제3호,\n하며, ③운영시스템 적용은 처리하는 정보의 기밀성·무결성·가용성을 고려하여 충분한\n데이터베이스 관리프로그램 등의 시스템 프로그램도 응용프로그램과 동일한 수준으로\n관리하여야 하고, ⑥전자금융거래에 사용되는 전산프로그램을 실제 업무를 처리하는\n정보처리시스템에 설치하기 전에 자체 보안성 검증을 실시하여야 하는데도\n시스템으로 복사하지 않고 운영시스템에서 직접 수정(11회) 하였음\n⑤ E부는 2018.7.2. 시스템 프로그램인 ㉱ 데이터베이스를 응용프로그램과 동일한\n수준으로 관리하지 않음에 따라 DB시스템 계정 비밀번호 변경작업을 관리자에게 미보고\n⑥ F부는 2021.1.1.~2022.10.26. 기간중 ㉲ 프로그램을 정보처리시스템에 설치하기 전\n1. ｢전자금융거래법｣ 제21조 제2항\n2. (舊) ｢전자금융감독규정｣(2025.2.5. 개정 前의 것) 제7조, 제29조",
+      "violations": [
+        "운영시스템 적용은 처리하는 정보의 기밀성·무결성·가용성을 고려하여 충분한",
+        "전자금융거래에 사용되는 전산프로그램을 실제 업무를 처리하는",
+        "E부는 2018.7.2. 시스템 프로그램인 ㉱ 데이터베이스를 응용프로그램과 동일한",
+        "F부는 2021.1.1.~2022.10.26. 기간중 ㉲ 프로그램을 정보처리시스템에 설치하기 전"
+      ]
+    },
+    {
+      "seq": "5055",
+      "institution": "흥국생명보험주식회사",
+      "date": "20260204",
+      "department": "IT검사국",
+      "detail_url": "https://www.fss.or.kr/fss/job/openInfo/view.do?menuNo=200476&sdate=2012-01-01&edate=2026-06-10&pageIndex=14&examMgmtNo=202300145&emOpenSeq=6",
+      "exam_mgmt_no": "202300145",
+      "em_open_seq": "6",
+      "pdf_urls": [
+        "https://www.fss.or.kr/fss.hpdownload?path=/dtm/opn/&file=202300145_06_202300145_%ED%9D%A5%EA%B5%AD%EC%83%9D%EB%AA%85%EB%B3%B4%ED%97%98%E3%88%9C+%EC%A0%95%EA%B8%B0%EA%B2%80%EC%82%AC+%EC%A0%9C%EC%9E%AC%EB%82%B4%EC%9A%A9+%EA%B3%B5%EA%B0%9C%EC%95%88.pdf"
+      ],
+      "source": "금융감독원 제재관련공시 (https://www.fss.or.kr)",
+      "pdf_text_snippet": "",
+      "violations": []
+    },
+    {
+      "seq": "5040",
+      "institution": "모아저축은행",
+      "date": "20260126",
+      "department": "IT검사국",
+      "detail_url": "https://www.fss.or.kr/fss/job/openInfo/view.do?menuNo=200476&sdate=2012-01-01&edate=2026-06-10&pageIndex=16&examMgmtNo=202400090&emOpenSeq=1",
+      "exam_mgmt_no": "202400090",
+      "em_open_seq": "1",
+      "pdf_urls": [
+        "https://www.fss.or.kr/fss.hpdownload?path=/dtm/opn/&file=202400090_01_%EB%AA%A8%EC%95%84%EC%A0%80%EC%B6%95%EC%9D%80%ED%96%89+%EC%88%98%EC%8B%9C%EA%B2%80%EC%82%AC+%EC%A0%9C%EC%9E%AC%EB%82%B4%EC%9A%A9+%EA%B3%B5%EA%B0%9C%EC%95%88.pdf"
+      ],
+      "source": "금융감독원 제재관련공시 (https://www.fss.or.kr)",
+      "pdf_text_snippet": "가. 신용정보전산시스템의 안전보호의무 위반\n신용정보전산시스템의 안전보호를 위해 ｢신용정보업감독규정｣ 제20조 [별표 3]에 정한\n나. 전자금융거래의 안전성 확보의무 위반\n□ ｢전자금융거래법｣ 제21조 제2항, (舊)｢전자금융감독규정｣ 제7조 제3호, 제15조 제2항\n제3호, 제4항에 의하면, 금융회사는 정보처리시스템 및 정보통신망을 해킹 등 전자적\n침해행위로부터 방지하기 위하여 ①정보보호시스템을 설치·운영하는 경우에는 보안정책의\n① 모아저축은행은 검사종료일(2024.3.15.) 현재 정보보호시스템 8종을 설치·운영하면서\n네트워크 접근관리시스템 등 2종은 최초 도입 시부터, 방화벽 등 나머지 6종은 최대\n□ ｢전자금융거래법｣ 제21조 제2항, (舊)｢전자금융감독규정｣ 제7조 제3호, 제17조 제4항에 의하면,\n□ ｢전자금융거래법｣ 제21조 제2항, (舊)｢전자금융감독규정｣ 제7조 제3호, 제29조 제3호 및\n제7호에 의하면 금융회사는 프로그램을 운영시스템에 등록 시 ①그 정당성에 대해 제3자의\n② 해당 개발자가 관련 프로그램을 운영시스템에 직접 등록(2021.1.28.)하도록 하여 외부망에\n접근·조회가 가능한 개발용 프로그램까지 운영시스템에 등록되었음\n□ ｢전자금융거래법｣ 제21조 제2항, (舊)｢전자금융감독규정｣ 제7조 제3호, 제31조 제2항에\n의하면 금융회사는 암호 및 인증시스템에 적용되는 키(이하, ‘암호키’)에 대하여 주입·\n□ ｢전자금융거래법｣ 제21조 제2항, (舊)｢전자금융감독규정｣ 제7조 제3호, 제32조 제2호\n1. ｢전자금융거래법｣ 제21조 제2항\n2. ｢전자금융거래법｣ 제51조 제1항\n3. (舊)｢전자금융감독규정｣ 제7조 제3호\n4. (舊)｢전자금융감독규정｣ 제15조 제2항 제3호, 제4항\n5. (舊)｢전자금융감독규정｣ 제17조 제4항\n6. (舊)｢전자금융감독규정｣ 제29조 제3호, 제7호\n7. (舊)｢전자금융감독규정｣ 제31조 제2항\n8. (舊)｢전자금융감독규정｣ 제32조 제2호 나목",
+      "violations": [
+        "정보보호시스템을 설치·운영하는 경우에는 보안정책의",
+        "모아저축은행은 검사종료일(2024.3.15.) 현재 정보보호시스템 8종을 설치·운영하면서",
+        "그 정당성에 대해 제3자의",
+        "해당 개발자가 관련 프로그램을 운영시스템에 직접 등록(2021.1.28.)하도록 하여 외부망에"
+      ]
+    },
+    {
+      "seq": "4951",
+      "institution": "주식회사 위메프",
+      "date": "20251110",
+      "department": "전자금융검사국",
+      "detail_url": "https://www.fss.or.kr/fss/job/openInfo/view.do?menuNo=200476&sdate=2012-01-01&edate=2026-06-10&pageIndex=25&examMgmtNo=202400484&emOpenSeq=5",
+      "exam_mgmt_no": "202400484",
+      "em_open_seq": "5",
+      "pdf_urls": [
+        "https://www.fss.or.kr/fss.hpdownload?path=/dtm/opn/&file=202400484_05_%EC%9C%84%EB%A9%94%ED%94%84+%EC%A0%9C%EC%9E%AC%EB%82%B4%EC%9A%A9+%EA%B3%B5%EA%B0%9C%EC%95%88%28F%29.pdf"
+      ],
+      "source": "금융감독원 제재관련공시 (https://www.fss.or.kr)",
+      "pdf_text_snippet": "(1) 전자금융거래 계약 관련 기준 및 절차 수립ㆍ운용 의무 위반\n「전자금융거래법」제21조 제2항 및 (舊)「전자금융감독규정」제21조 제1호 및\n제3호에 의하면 전자금융업자는 정보처리시스템 구축 및 전자금융거래와\n2023.6.1. A사*(당시 B사)와 ‘전자금융서비스를 포함한 회사의 IT 인프라 전반에\n** 최초 계약 체결 시에는 IT 인프라 운영 위주의 계약이었으나 갱신계약을 체결하면서 서비스 범위에\nIT 운영과 다소 무관한 재무, 회계관리(매출관리, 고객정산 및 지불, 회계처리 등 포함) 등 통상적인\nIT 인프라 운영 서비스 범위에는 포함되지 않는 일반 관리 업무까지 추가되었음에도 이와 같이\n※ 2023.4.5. 제정한 내규 ｢정보보호 감사지침｣ 제7조2)1. 및 3.에 따르면 ‘적합한 업체를\n1. ｢전자금융거래법｣ 제21조 제2항\n2. (舊) ｢전자금융감독규정｣ 제21조 제1호, 제3호\n(2) 정보처리시스템 감리 지침 작성·운용 의무 위반\n「전자금융거래법」제21조 제2항 및 (舊)「전자금융감독규정」제22조에 의하면\n전자금융업자는 정보처리시스템의 안전성 및 효율성 확보를 위하여 기획,\n개발 및 운용의 감리 실시 기준, 전자금융업무와 관련된 외부주문등에 대한\n감리 기준 등을 포함한 정보처리시스템 감리 지침을 작성·운영하여야 한다.\n하지만 ㈜위메프는 검사대상기간(2019.8.7.~2024.9.27.) 중 정보처리시스템\n정보처리시스템 등에 대하여 감리 기준에 따른 전산감리를 시행하지 않은 사실이\n※ ㈜위메프 내규 ｢정보보호 감사지침｣ (2023.4.5. 제정) 제5조 제1항에 따르면 ‘전산감리\n1. ｢전자금융거래법｣ 제21조 제2항\n2. (舊) ｢전자금융감독규정｣ 제22조",
+      "violations": []
+    },
+    {
+      "seq": "4950",
+      "institution": "㈜티몬",
+      "date": "20251110",
+      "department": "전자금융검사국",
+      "detail_url": "https://www.fss.or.kr/fss/job/openInfo/view.do?menuNo=200476&sdate=2012-01-01&edate=2026-06-10&pageIndex=25&examMgmtNo=202400486&emOpenSeq=3",
+      "exam_mgmt_no": "202400486",
+      "em_open_seq": "3",
+      "pdf_urls": [
+        "https://www.fss.or.kr/fss.hpdownload?path=/dtm/opn/&file=202400486_03_%ED%8B%B0%EB%AA%AC+%EC%A0%9C%EC%9E%AC%EB%82%B4%EC%9A%A9+%EA%B3%B5%EA%B0%9C%EC%95%88%28F%29.pdf"
+      ],
+      "source": "금융감독원 제재관련공시 (https://www.fss.or.kr)",
+      "pdf_text_snippet": "「전자금융거래법」제42조 제1항 및「전자금융감독규정」제62조 제1항, 「금융\n위원회의 설치 등에 관한 법률」제41조 제1항 제2호에에 의하면 전자금융업자는\n* 전자지금결제대행(PG) 이용현황(IT008), 경영지도기준 보고서(IT022) : 45일 이내\n결제대행(PG) 이용현황(IT008)’의 결제대행잔액 항목 및 ‘경영지도기준 보고서\n(IT022)’의 미정산 잔액 항목 제출 시 특별한 사유 없이 일부 판매자에 대한\n‘20.9월~’24.3월 업무보고서 상 ‘전자지금결제대행(PG) 이용현황(IT008)’, ‘경영\n지도기준 보고서(IT022)’를 허위기재하고, ’24.6월 동 보고서(IT008, IT022)에 대해\n1. ｢전자금융거래법｣ 제42조 제1항\n2. ｢전자금융거래법｣ 제51조 제1항 제11호\n3. ｢전자금융감독규정｣ 제62조 제1항\n(2) 전자금융거래 계약 관련 기준 및 절차 수립ㆍ운용 의무 위반\n「전자금융거래법」제21조 제2항 및 (舊)「전자금융감독규정」제21조 제1호 및\n제3호에 의하면 전자금융업자는 정보처리시스템 구축 및 전자금융거래와\n2023.4.1. A사*(당시 B사)와 ‘전자금융서비스를 포함한 회사의 IT 인프라 전반에\n** 최초 계약 체결 시에는 IT 인프라 운영 위주의 계약이었으나 갱신계약을 체결하면서 서비스 범위에\nIT 운영과 다소 무관한 재무, 회계관리(매출관리, 고객정산 및 지불, 회계처리 등 포함) 등 통상적인\nIT 인프라 운영 서비스 범위에는 포함되지 않는 일반 관리 업무까지 추가되었음에도 이와 같이\n1. ｢전자금융거래법｣ 제21조 제2항\n2. (舊) ｢전자금융감독규정｣ 제21조 제1호, 제3호\n(3) 정보처리시스템 감리 지침 작성·운용 의무 위반\n「전자금융거래법」제21조 제2항 및 (舊)「전자금융감독규정」제22조에 의하면\n전자금융업자는 정보처리시스템의 안전성 및 효율성 확보를 위하여 기획,\n개발 및 운용의 감리 실시 기준, 전자금융업무와 관련된 외부주문등에 대한\n감리 기준 등을 포함한 정보처리시스템 감리 지침을 작성·운영하여야 한",
+      "violations": []
+    },
+    {
+      "seq": "4869",
+      "institution": "㈜비바리퍼블리카",
+      "date": "20250709",
+      "department": "전자금융검사국",
+      "detail_url": "https://www.fss.or.kr/fss/job/openInfo/view.do?menuNo=200476&sdate=2012-01-01&edate=2026-06-10&pageIndex=33&examMgmtNo=202400670&emOpenSeq=1",
+      "exam_mgmt_no": "202400670",
+      "em_open_seq": "1",
+      "pdf_urls": [
+        "https://www.fss.or.kr/fss.hpdownload?path=/dtm/opn/&file=202400670_01_%28%EC%A3%BC%29%EB%B9%84%EB%B0%94%EB%A6%AC%ED%8D%BC%EB%B8%94%EB%A6%AC%EC%B9%B4_%EC%A0%9C%EC%9E%AC%EB%82%B4%EC%9A%A9_%EA%B3%B5%EA%B0%9C%EC%95%88.pdf"
+      ],
+      "source": "금융감독원 제재관련공시 (https://www.fss.or.kr)",
+      "pdf_text_snippet": "",
+      "violations": []
+    },
+    {
+      "seq": "4860",
+      "institution": "피에프씨테크놀로지스 주식회사",
+      "date": "20250617",
+      "department": "전자금융검사국",
+      "detail_url": "https://www.fss.or.kr/fss/job/openInfo/view.do?menuNo=200476&sdate=2012-01-01&edate=2026-06-10&pageIndex=34&examMgmtNo=202200487&emOpenSeq=1",
+      "exam_mgmt_no": "202200487",
+      "em_open_seq": "1",
+      "pdf_urls": [
+        "https://www.fss.or.kr/fss.hpdownload?path=/dtm/opn/&file=202200487_01_%ED%94%BC%EC%97%90%ED%94%84%EC%94%A8%ED%85%8C%ED%81%AC%EB%86%80%EB%A1%9C%EC%A7%80%EC%8A%A4%28%EC%A3%BC%29_%EC%A0%9C%EC%9E%AC%EB%82%B4%EC%9A%A9_%EA%B3%B5%EA%B0%9C%EC%95%88.pdf"
+      ],
+      "source": "금융감독원 제재관련공시 (https://www.fss.or.kr)",
+      "pdf_text_snippet": "",
+      "violations": []
+    },
+    {
+      "seq": "4758",
+      "institution": "에이치엔알 주식회사",
+      "date": "20250327",
+      "department": "전자금융검사국",
+      "detail_url": "https://www.fss.or.kr/fss/job/openInfo/view.do?menuNo=200476&sdate=2012-01-01&edate=2026-06-10&pageIndex=44&examMgmtNo=202300491&emOpenSeq=1",
+      "exam_mgmt_no": "202300491",
+      "em_open_seq": "1",
+      "pdf_urls": [
+        "https://www.fss.or.kr/fss.hpdownload?path=/dtm/opn/&file=202300491_01_%EC%A0%9C%EC%9E%AC%EB%82%B4%EC%9A%A9_%EA%B3%B5%EA%B0%9C%EC%95%88%28%EC%97%90%EC%9D%B4%EC%B9%98%EC%97%94%EC%95%8C%28%EC%A3%BC%29%29.pdf"
+      ],
+      "source": "금융감독원 제재관련공시 (https://www.fss.or.kr)",
+      "pdf_text_snippet": "",
+      "violations": []
+    },
+    {
+      "seq": "4746",
+      "institution": "비씨카드㈜",
+      "date": "20250310",
+      "department": "IT검사국",
+      "detail_url": "https://www.fss.or.kr/fss/job/openInfo/view.do?menuNo=200476&sdate=2012-01-01&edate=2026-06-10&pageIndex=45&examMgmtNo=202200171&emOpenSeq=1",
+      "exam_mgmt_no": "202200171",
+      "em_open_seq": "1",
+      "pdf_urls": [
+        "https://www.fss.or.kr/fss.hpdownload?path=/dtm/opn/&file=202200171_01_%EB%B9%84%EC%94%A8%EC%B9%B4%EB%93%9C_%EC%A0%9C%EC%9E%AC%EB%82%B4%EC%9A%A9+%EA%B3%B5%EA%B0%9C%EB%82%B4%EC%9A%A9.pdf"
+      ],
+      "source": "금융감독원 제재관련공시 (https://www.fss.or.kr)",
+      "pdf_text_snippet": "⑴ 무정전 전원장치 구비 등 전자금융거래 안전성 확보의무 위반\n｢전자금융거래법｣ 제21조 제2항, ｢전자금융감독규정｣ 제7조 및 제10조 제4호에 의하면\n금융회사는 전자금융거래의 안전성 및 신뢰성을 확보할 수 있도록 전산실이 위치한 건물에\n비상전력을 공급하지 못하여 회사 전산서버 등 주요 전산시스템 전원이 차단됨에 따라\n시스템에서 잔액을 체크하고 승인되는 프로세스로 인해 사고 발생시 사용이 중단\n1. ｢전자금융거래법｣ 제21조 제2항\n2. ｢전자금융감독규정｣ 제7조, 제10조 제4호",
+      "violations": []
+    }
+  ]
+}
