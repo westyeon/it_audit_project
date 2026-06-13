@@ -67,10 +67,17 @@ st.markdown("""
     --text-muted:   #94a3b8;
 }
 
-/* ── Streamlit 기본 헤더/툴바 숨김 ── */
+/* ── Streamlit 기본 헤더/툴바/배지 숨김 ── */
 header[data-testid="stHeader"] { display: none !important; }
 div[data-testid="stToolbar"]   { display: none !important; }
 div[data-testid="stDecoration"]{ display: none !important; }
+div[data-testid="stStatusWidget"] { display: none !important; }
+[class*="viewerBadge"] { display: none !important; }
+[data-testid="stAppViewBadge"] { display: none !important; }
+a[href^="https://streamlit.io"] { display: none !important; }
+a[href*="streamlit.io/cloud"] { display: none !important; }
+#MainMenu { display: none !important; }
+footer { display: none !important; }
 .main .block-container { padding-top: 0.8rem !important; }
 
 /* ── 폰트 ── */
