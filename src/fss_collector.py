@@ -125,26 +125,23 @@ def fetch_detail(item: dict) -> dict:
 
 # ── PDF 파싱 ─────────────────────────────────────────────────────
 def parse_pdf(url: str) -> str:
-    """PDF 다운로드 후 텍스트 추출 (pdfplumber)"""
+    """
+    PDF 다운로드 후 텍스트 추출 (pdfplumber).
+    PDF의 레이아웃 줄바꿈을 공백으로 합쳐 문장 흐름을 복원한다.
+    (페이지 너비 기준 줄바꿈이 문장 중간을 끊는 문제 해결)
+    """
     try:
         import pdfplumber, io
         r = _get(url)
         if not r:
             return ""
         with pdfplumber.open(io.BytesIO(r.content)) as pdf:
-            texts = []
-            for page in pdf.pages[:8]:   # 최대 8페이지
-                t = page.extract_text()
-                if t:
-                    texts.append(t)
+            texts = [(page.extract_text() or "") for page in pdf.pages[:8]]
         full = "\n".join(texts)
-        # IT 관련 핵심 단락만 추출
-        it_keywords = ["전자금융", "정보보호", "IT", "정보기술", "시스템",
-                       "접근통제", "백업", "변경관리", "개인정보"]
-        paragraphs = full.split("\n")
-        relevant = [p for p in paragraphs
-                    if any(k in p for k in it_keywords) and len(p) > 20]
-        return "\n".join(relevant[:30])   # 최대 30줄
+        # 줄바꿈 → 공백 (문장 이어붙이기), 중복 공백 정리
+        full = re.sub(r"[ \t]*\n[ \t]*", " ", full)
+        full = re.sub(r"\s{2,}", " ", full)
+        return full.strip()
     except Exception as e:
         log.warning(f"PDF 파싱 실패 ({url}): {e}")
         return ""
@@ -152,18 +149,38 @@ def parse_pdf(url: str) -> str:
 
 # ── 위반 항목 추출 ────────────────────────────────────────────────
 def extract_violations(pdf_text: str) -> list[str]:
-    """PDF 텍스트에서 위반 항목 추출"""
+    """
+    PDF 텍스트에서 위반 항목을 '문장 단위'로 추출.
+    종결어미(~함/음/됨/임) 또는 마침표 기준으로 분리하여 문장이 잘리지 않게 한다.
+    IT 키워드 + 위반 표현이 모두 포함된 문장만 선별.
+    """
+    if not pdf_text:
+        return []
+
+    IT_KW = ["전자금융", "정보보호", "정보기술", "시스템", "접근통제", "백업",
+             "변경관리", "개인정보", "권한", "암호", "인증", "망분리", "로그",
+             "데이터", "프로그램", "접근", "보안"]
+    VIOL_KW = ["위반", "미흡", "아니하", "아니함", "불이행", "미적용", "미실시",
+               "부적정", "소홀", "누락", "미수행", "미점검", "위배", "미준수"]
+
+    # 문장 분리: 한글/닫는괄호 뒤 마침표 또는 종결어미에서만 끊기
+    # (날짜의 '2022.9.30.' 같은 숫자 뒤 마침표는 문장 끝으로 보지 않음)
+    sentences = re.split(
+        r"(?<=[가-힣)\]][.])\s+|(?<=[함음됨임])\s+(?=[①②③④⑤⑥⑦⑧⑨⑩가-힣])",
+        pdf_text)
+
     violations = []
-    patterns = [
-        r"[①②③④⑤⑥⑦⑧⑨⑩]\s*(.+)",    # 원문자 번호
-        r"\d+[.]\s*(.{10,80}위반.{0,40})", # "~위반" 포함 문장
-        r"\d+[.]\s*(.{10,80}미흡.{0,40})", # "~미흡" 포함 문장
-        r"\d+[.]\s*(.{10,80}불이행.{0,40})", # "~불이행" 포함 문장
-    ]
-    for pat in patterns:
-        matches = re.findall(pat, pdf_text)
-        violations.extend([m.strip() for m in matches if len(m.strip()) > 10])
-    return list(dict.fromkeys(violations))[:15]  # 중복 제거, 최대 15개
+    for s in sentences:
+        # 앞쪽 항목번호(①②, 1., 가.) 제거
+        s = re.sub(r"^[①②③④⑤⑥⑦⑧⑨⑩\d.\)\s가-힣]{0,4}[.)]\s*", "", s).strip()
+        s = s.strip()
+        if len(s) < 20:
+            continue
+        if any(k in s for k in IT_KW) and any(k in s for k in VIOL_KW):
+            # 지나치게 긴 문장만 잘라 말줄임 (대부분 완결 문장)
+            violations.append(s if len(s) <= 320 else s[:317].rstrip() + "…")
+
+    return list(dict.fromkeys(violations))[:12]   # 중복 제거, 최대 12개
 
 
 # ── 메인 수집 ─────────────────────────────────────────────────────

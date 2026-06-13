@@ -19,11 +19,11 @@ SUMMARY_PATH = os.path.join(DATA_DIR, "violations_summary.csv")
 REPORT_DIR   = os.path.join(DATA_DIR, "report")
 
 DOMAIN_ORDER  = ["접근통제", "변경관리", "운영통제"]
-DOMAIN_COLORS = {"접근통제": "#0284c7", "변경관리": "#2563eb", "운영통제": "#0891b2"}
+DOMAIN_COLORS = {"접근통제": "#60a5fa", "변경관리": "#a78bfa", "운영통제": "#22d3ee"}
 DOMAIN_ICON   = {"접근통제": "", "변경관리": "", "운영통제": ""}
 DOMAIN_LOG_MAP = {"접근통제": "access_log.csv", "변경관리": "deploy_log.csv",
                   "운영통제": "backup_log.csv"}
-SEV_COLORS    = {"HIGH": "#ef4444", "MEDIUM": "#f59e0b", "LOW": "#0ea5e9"}
+SEV_COLORS    = {"HIGH": "#fb7185", "MEDIUM": "#fbbf24", "LOW": "#34d399"}
 
 def _detect_months():
     files  = glob.glob(os.path.join(DATA_DIR, "violations_summary_????-??.csv"))
@@ -40,7 +40,7 @@ st.set_page_config(
     page_title="AI IT감사 점검 시스템",
     page_icon="🛡",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="collapsed",
 )
 
 # ── CSS (블루-화이트 글래스모피즘) ─────────────────────────────
@@ -58,14 +58,20 @@ st.markdown("""
     --sky:          #0ea5e9;
     --blue:         #2563eb;
     --cyan:         #0891b2;
-    --bg:           #f5f9ff;
-    --glass:        rgba(255,255,255,0.62);
-    --glass-border: rgba(255,255,255,0.85);
-    --border:       #dbeafe;
+    --bg:           #f7faff;
+    --glass:        #ffffff;
+    --glass-border: #e6edfb;
+    --border:       #e6edfb;
     --text:         #0f172a;
     --text-sub:     #475569;
     --text-muted:   #94a3b8;
 }
+
+/* ── Streamlit 기본 헤더/툴바 숨김 ── */
+header[data-testid="stHeader"] { display: none !important; }
+div[data-testid="stToolbar"]   { display: none !important; }
+div[data-testid="stDecoration"]{ display: none !important; }
+.main .block-container { padding-top: 0.8rem !important; }
 
 /* ── 폰트 ── */
 html, body, [class*="css"], .stApp, .stApp * {
@@ -83,14 +89,12 @@ span[data-testid="stIconMaterial"],
     letter-spacing: normal !important;
 }
 
-/* ── 전체 배경: 블루-화이트 메시 그라디언트 ── */
+/* ── 전체 배경: 밝은 화이트 + 상단 옅은 글로우 ── */
 .stApp {
     background-color: var(--bg) !important;
     background-image:
-        radial-gradient(at 12% 18%, rgba(96,165,250,0.30) 0px, transparent 50%),
-        radial-gradient(at 88% 8%,  rgba(125,211,252,0.35) 0px, transparent 50%),
-        radial-gradient(at 75% 85%, rgba(59,130,246,0.18) 0px, transparent 55%),
-        radial-gradient(at 15% 92%, rgba(186,230,253,0.40) 0px, transparent 50%) !important;
+        radial-gradient(at 50% -5%, rgba(96,165,250,0.12) 0px, transparent 42%),
+        radial-gradient(at 95% 2%,  rgba(125,211,252,0.10) 0px, transparent 38%) !important;
     background-attachment: fixed !important;
 }
 .main .block-container {
@@ -138,38 +142,35 @@ section[data-testid="stSidebar"] hr {
 
 /* ── 카드 — 글래스 ── */
 .dash-card {
-    background: var(--glass);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border-radius: 20px;
+    background: #ffffff;
+    border-radius: 18px;
     padding: 1.1rem 1.2rem 1rem;
-    box-shadow: 0 8px 32px rgba(37,99,235,0.10);
+    box-shadow: 0 1px 3px rgba(15,23,42,0.04), 0 6px 20px rgba(15,23,42,0.06);
     margin-bottom: 0.75rem;
-    border: 1px solid var(--glass-border);
+    border: 1px solid var(--border);
     transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 .dash-card:hover {
-    box-shadow: 0 12px 36px rgba(37,99,235,0.16);
+    box-shadow: 0 4px 12px rgba(15,23,42,0.08), 0 12px 28px rgba(37,99,235,0.10);
     transform: translateY(-1px);
 }
 .card-title {
-    font-size: 0.75rem; font-weight: 700;
-    color: var(--text-muted);
-    text-transform: uppercase; letter-spacing: 0.08em;
-    margin-bottom: 0.65rem;
-    padding-bottom: 0.45rem;
+    font-size: 0.95rem; font-weight: 800;
+    color: #1e293b;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.7rem;
+    padding-bottom: 0.5rem;
     border-bottom: 1px solid rgba(37,99,235,0.10);
 }
+.card-title i { color: #3b82f6; }
 
-/* ── KPI 카드 — 글래스 ── */
+/* ── KPI 카드 ── */
 .kpi-box {
-    background: var(--glass);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border-radius: 20px;
+    background: #ffffff;
+    border-radius: 18px;
     padding: 1rem 1.1rem 0.85rem;
-    box-shadow: 0 8px 32px rgba(37,99,235,0.10);
-    border: 1px solid var(--glass-border);
+    box-shadow: 0 1px 3px rgba(15,23,42,0.04), 0 6px 20px rgba(15,23,42,0.06);
+    border: 1px solid var(--border);
     border-top: 3px solid var(--accent);
     transition: transform 0.18s ease, box-shadow 0.18s ease;
     position: relative; overflow: hidden;
@@ -196,7 +197,7 @@ section[data-testid="stSidebar"] hr {
 }
 .kpi-box .dl { font-size: 0.71rem; margin-top: 0.2rem; }
 .kpi-box .dl.up   { color: #2563eb; font-weight: 600; }
-.kpi-box .dl.down { color: #ef4444; font-weight: 600; }
+.kpi-box .dl.down { color: #f43f5e; font-weight: 600; }
 
 /* ── 섹션 레이블 ── */
 .section-label {
@@ -291,27 +292,107 @@ section[data-testid="stSidebar"] span[data-baseweb="tag"] svg {
 }
 
 /* ── 데이터프레임 — 화이트 ── */
-.stDataFrame {
+.stDataFrame, div[data-testid="stDataFrame"] {
     border-radius: 14px !important;
     overflow: hidden !important;
-    border: 1px solid white !important;
-    background: white !important;
-    box-shadow: 0 2px 12px rgba(37,99,235,0.07) !important;
+    border: 1px solid var(--border) !important;
+    background: #ffffff !important;
+    box-shadow: 0 1px 3px rgba(15,23,42,0.05), 0 4px 14px rgba(15,23,42,0.05) !important;
 }
-.stDataFrame [data-testid="stDataFrameResizable"] { background: white !important; }
+.stDataFrame [data-testid="stDataFrameResizable"],
+div[data-testid="stDataFrame"] [data-testid="stDataFrameResizable"] {
+    background: #ffffff !important;
+}
+/* expander도 흰 배경 */
+div[data-testid="stExpander"] {
+    background: #ffffff !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 1px 3px rgba(15,23,42,0.04) !important;
+}
+div[data-testid="stExpander"] summary { font-weight: 600 !important; }
 
-/* ── 기본 버튼 (Primary) ── */
+/* ── 버튼: pill 형태 (활성 메뉴 + 액션) ── */
 .main .stButton button[kind="primary"] {
-    background: linear-gradient(135deg, #1e40af, #2563eb 55%, #0ea5e9) !important;
+    background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
     border: none !important;
-    border-radius: 12px !important;
+    border-radius: 999px !important;
     font-weight: 700 !important;
-    box-shadow: 0 4px 14px rgba(37,99,235,0.35) !important;
-    transition: all 0.15s ease !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 18px rgba(79,70,229,0.32) !important;
+    transition: all 0.18s ease !important;
 }
 .main .stButton button[kind="primary"]:hover {
-    box-shadow: 0 6px 20px rgba(37,99,235,0.5) !important;
+    box-shadow: 0 8px 24px rgba(79,70,229,0.45) !important;
     transform: translateY(-1px) !important;
+}
+.main .stButton button[kind="primary"] * { color: #ffffff !important; }
+
+/* ── 버튼: 비활성 메뉴 + 보조 액션 (옅은 pill) ── */
+.main .stButton button[kind="secondary"] {
+    background: rgba(255,255,255,0.55) !important;
+    border: 1px solid transparent !important;
+    border-radius: 999px !important;
+    color: #64748b !important;
+    font-weight: 600 !important;
+    box-shadow: none !important;
+    transition: all 0.18s ease !important;
+}
+.main .stButton button[kind="secondary"]:hover {
+    background: #eef2ff !important;
+    color: #4f46e5 !important;
+    border-color: transparent !important;
+    transform: translateY(-1px) !important;
+}
+.main .stButton button[kind="secondary"]:hover * { color: #4f46e5 !important; }
+
+/* ── 상단 메뉴: 책갈피 텍스트 탭 ── */
+.st-key-topnav .stButton button {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    border-bottom: 2.5px solid transparent !important;
+    padding: 0.5rem 0.2rem !important;
+    transition: color 0.15s ease, border-color 0.15s ease !important;
+    transform: none !important;
+}
+.st-key-topnav .stButton button:hover { transform: none !important; }
+/* 비선택 탭 — 옅은 회색 */
+.st-key-topnav .stButton button[kind="secondary"] {
+    color: #94a3b8 !important;
+    font-weight: 500 !important;
+}
+.st-key-topnav .stButton button[kind="secondary"] * { color: #94a3b8 !important; }
+.st-key-topnav .stButton button[kind="secondary"]:hover,
+.st-key-topnav .stButton button[kind="secondary"]:hover * {
+    color: #334155 !important;
+    background: transparent !important;
+}
+/* 선택 탭 — 진한 블루 + 밑줄 */
+.st-key-topnav .stButton button[kind="primary"] {
+    color: #2563eb !important;
+    font-weight: 800 !important;
+    background: transparent !important;
+    border-bottom: 2.5px solid #2563eb !important;
+    box-shadow: none !important;
+}
+.st-key-topnav .stButton button[kind="primary"] * { color: #2563eb !important; }
+/* 메뉴 아이콘 — 칩 제거, 작고 미니멀 */
+.st-key-topnav .stButton button span[data-testid="stIconMaterial"] {
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin-right: 4px !important;
+    font-size: 17px !important;
+    color: inherit !important;
+}
+
+/* ── 상단 분석월 셀렉트박스 ── */
+.main .stSelectbox > div > div {
+    background: rgba(255,255,255,0.85) !important;
+    border-radius: 999px !important;
+    border: 1px solid var(--border) !important;
 }
 
 /* ── 구분선 ── */
@@ -435,9 +516,9 @@ def calc_scores(df, month=None):
     return s
 
 def grade(sc):
-    if sc < 60:   return "고위험", "#ef4444"
-    elif sc < 80: return "주의",   "#f59e0b"
-    else:         return "정상",   "#0284c7"
+    if sc < 60:   return "고위험", "#fb7185"
+    elif sc < 80: return "주의",   "#fbbf24"
+    else:         return "정상",   "#60a5fa"
 
 def calc_matrix(df):
     rows = []
@@ -473,7 +554,7 @@ def compare_violations(curr_df, prev_df):
     curr_df에 '위반상태' 컬럼 추가:
       반복위반 — 전월에도 위반, 이번에도 위반  (가장 위험)
       신규위반 — 이번 달 처음 발생
-      해소됨   — 전월에 위반이었으나 이번 달 정상
+      해결됨   — 전월에 위반이었으나 이번 달 정상
       이상없음 — 전월·현재 모두 이상 없음
     Returns (tagged_df, n_repeat, n_new, n_resolved)
     """
@@ -495,7 +576,7 @@ def compare_violations(curr_df, prev_df):
         rid = row["rule_id"]
         if row["yn_violation"] == "Y":
             return "반복위반" if rid in repeat else "신규위반"
-        return "해소됨" if rid in resolved else "이상없음"
+        return "해결됨" if rid in resolved else "이상없음"
 
     curr["위반상태"] = curr.apply(_status, axis=1)
     return curr, len(repeat), len(new_viol), len(resolved)
@@ -525,7 +606,7 @@ def build_audit_context(df, month, scores, n_repeat, n_new, n_resolved):
         "[전월 대비 위반 추이]",
         f"- 반복 위반(전월 동일): {n_repeat}개 규칙",
         f"- 신규 위반(이번 달 첫 발생): {n_new}개 규칙",
-        f"- 해소 완료: {n_resolved}개 규칙",
+        f"- 해결 완료: {n_resolved}개 규칙",
         "",
         "[HIGH 등급 위반 규칙 전체 목록]",
     ]
@@ -557,7 +638,7 @@ def build_audit_context(df, month, scores, n_repeat, n_new, n_resolved):
         f"- 전체 점검 규칙: {total_rules}개",
         f"- 위반 탐지 규칙: {total_viol}개 ({round(total_viol/total_rules*100)}%)",
         f"- HIGH 위반: {int(((df['severity']=='HIGH')&(df['yn_violation']=='Y')).sum())}개",
-        f"- 반복 위반: {n_repeat}개 / 신규: {n_new}개 / 해소: {n_resolved}개",
+        f"- 반복 위반: {n_repeat}개 / 신규: {n_new}개 / 해결: {n_resolved}개",
     ]
     return "\n".join(lines)
 
@@ -609,37 +690,41 @@ def stream_ai_insights(context: str):
         import anthropic as _ant
         client = _ant.Anthropic(api_key=_get_api_key())
 
-        system_prompt = """당신은 금융권 IT감사 전문가로서 내부감사 보고서를 작성합니다.
+        system_prompt = """당신은 금융권 IT 통제 점검 전문가로서 내부 통제 점검 보고서를 작성합니다.
 
 [필수 준수 사항]
 1. 제공된 데이터의 수치만 사용하고, 임의로 수치를 변경하거나 추정하지 마십시오.
 2. 언급하는 모든 규칙은 반드시 제공된 목록의 rule_id(예: R002)를 명시하십시오.
-3. 감사 보고서에 적합한 공식 용어를 사용하십시오.
+3. 점검 보고서에 적합한 공식 용어를 사용하십시오.
    - 사용 가능: 통제 미흡, 시정 필요, 개선 권고, 취약점 식별, 위반 탐지, 즉시 조치 필요
    - 사용 금지: 붕괴, 심각한 문제, 위기, 마비, 위험천만 등 과장된 표현
 4. 각 항목은 사실(위반 건수, rule_id)을 먼저 서술하고, 해석·권고를 후술하십시오.
 5. 불확실한 원인 추정은 "~로 추정됨", "~가능성 있음" 등 단정 표현을 피하십시오."""
 
-        prompt = f"""아래 IT감사 점검 결과를 분석하여 세 섹션으로 보고하십시오.
+        prompt = f"""아래 IT감사 점검 결과를 분석하십시오.
 
 {context}
 
 ---
 
-## 1. 위반 패턴 분석
-- 도메인별 위반 현황을 수치 기반으로 기술하십시오.
-- 반복 위반 규칙의 지속 원인을 구조적 관점에서 분석하십시오.
-- 각 분석 근거로 rule_id와 실제 위반 건수를 반드시 인용하십시오.
+가독성을 위해 **간결하게** 작성하십시오. 각 항목은 1~2줄을 넘기지 마십시오.
+맨 처음 줄은 반드시 아래 형식으로 시작하십시오.
 
-## 2. 우선 조치 항목 (Priority 1~5)
-- 위반 심각도(HIGH 우선)와 반복 여부를 기준으로 5개 항목을 선정하십시오.
-- 각 항목: [Priority N] rule_id | 규칙명 | 조치 방법 형식으로 작성하십시오.
-- 조치 방법은 담당자가 즉시 실행 가능한 수준으로 구체적으로 기술하십시오.
+핵심 요약: (이번 달 IT통제 상태의 가장 중요한 결론을 한 문장으로. 예: 변경관리 도메인에서 HIGH 위반 11건이 집중되어 즉시 조치가 필요함)
 
-## 3. 감사 총평 (경영진 보고용)
-- 이번 달 IT통제 전반에 대한 평가를 2~3문장으로 작성하십시오.
-- 종합 점수, 주요 취약 도메인, 개선 방향을 포함하십시오.
-- 감사 보고서 문체(~임, ~함, ~필요)를 사용하십시오."""
+그 다음 빈 줄을 두고 아래 세 섹션을 작성하십시오.
+
+## 위반 패턴 분석
+- 도메인별 위반 현황을 핵심 수치 중심으로 3~4개 bullet로 기술. 각 bullet은 한 줄.
+- 반복 위반 규칙은 rule_id와 건수를 인용하되 장황한 설명은 생략.
+
+## 우선 조치 항목
+- HIGH·반복 위반 기준 5개를 선정.
+- 형식: **[P1] R002 미승인 운영배포** — 조치: (한 줄 조치 방법)
+- 조치 방법은 한 줄로 핵심만.
+
+## 점검 총평
+- 2문장 이내. 종합 점수·주요 취약 도메인·개선 방향만 포함. 공식 보고서 문체(~임, ~함, ~필요)."""
 
         with client.messages.stream(
             model="claude-sonnet-4-5",
@@ -654,16 +739,74 @@ def stream_ai_insights(context: str):
         yield f"\n\n⚠ AI 분석 오류: {str(e)}"
 
 
+def render_ai_result(text, warnings=None):
+    """AI 응답을 핵심 요약 카드 + 섹션 탭으로 표시."""
+    import re
+    # 핵심 요약 추출
+    summary = ""
+    m = re.search(r'핵심\s*요약\s*[:：]\s*(.+)', text)
+    if m:
+        summary = m.group(1).strip().split("\n")[0]
+
+    # ## 헤더 기준 섹션 분리
+    blocks = re.split(r'\n#{2,3}\s+', "\n" + text)
+    sections = []
+    for b in blocks[1:]:
+        parts = b.split("\n", 1)
+        title = parts[0].strip()
+        body  = parts[1].strip() if len(parts) > 1 else ""
+        if title:
+            sections.append((title, body))
+
+    # 핵심 요약 카드
+    if summary:
+        st.markdown(
+            f"<div style='background:linear-gradient(135deg,#eff6ff,#f0f9ff);"
+            f"border:1px solid #bfdbfe;border-left:4px solid #3b82f6;"
+            f"border-radius:14px;padding:0.95rem 1.2rem;margin-bottom:0.8rem;'>"
+            f"<div style='font-size:0.7rem;font-weight:700;color:#2563eb;"
+            f"letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.35rem;'>"
+            f"<i class='fa-solid fa-lightbulb'></i>&nbsp; 핵심 요약</div>"
+            f"<div style='font-size:0.98rem;font-weight:600;color:#1e293b;"
+            f"line-height:1.55;'>{summary}</div></div>",
+            unsafe_allow_html=True)
+
+    # 섹션 탭
+    if sections:
+        ICONS = {"위반 패턴 분석": "🔍", "우선 조치 항목": "✅",
+                 "점검 총평": "📝"}
+        tab_labels = []
+        for t, _ in sections:
+            ic = next((v for k, v in ICONS.items() if k in t), "•")
+            tab_labels.append(f"{ic}  {t}")
+        tabs = st.tabs(tab_labels)
+        for tab, (title, body) in zip(tabs, sections):
+            with tab:
+                st.markdown("<div style='height:0.4rem'></div>",
+                            unsafe_allow_html=True)
+                st.markdown(body)
+    else:
+        st.markdown(text)
+
+    # 팩트 검증
+    if warnings:
+        with st.expander("⚠ 팩트 검증 — 확인 필요 항목", expanded=False):
+            for w in warnings:
+                st.warning(w)
+    else:
+        st.caption("✓ 팩트 검증 통과 — 응답 내 수치가 실제 데이터와 일치합니다.")
+
+
 STATUS_COLOR = {
-    "반복위반": "#ef4444",
-    "신규위반": "#f59e0b",
-    "해소됨":   "#10b981",
+    "반복위반": "#fb7185",
+    "신규위반": "#fbbf24",
+    "해결됨":   "#34d399",
     "이상없음": "#94a3b8",
 }
 STATUS_BADGE_CSS = {
-    "반복위반": "background:#fef2f2;color:#ef4444;",
-    "신규위반": "background:#fff7ed;color:#f59e0b;",
-    "해소됨":   "background:#f0fdf4;color:#10b981;",
+    "반복위반": "background:#fff1f2;color:#f43f5e;",
+    "신규위반": "background:#fffbeb;color:#d97706;",
+    "해결됨":   "background:#f0fdf4;color:#059669;",
     "이상없음": "background:#f8fafc;color:#94a3b8;",
 }
 
@@ -735,14 +878,14 @@ def trend_fig(trend_df, domains, height=240):
             fill="tozeroy", fillcolor=hex_rgba(col, 0.06),
             hovertemplate=f"<b>{d}</b>: %{{y}}점<extra></extra>",
         ))
-    fig.add_hrect(y0=0,  y1=60, fillcolor="rgba(239,68,68,0.04)",  line_width=0)
-    fig.add_hrect(y0=60, y1=80, fillcolor="rgba(245,158,11,0.04)", line_width=0)
-    fig.add_hrect(y0=80, y1=105, fillcolor="rgba(2,132,199,0.03)", line_width=0)
-    fig.add_hline(y=80, line_dash="dot", line_color="#0284c7", line_width=1,
-                  annotation_text="80", annotation_font_color="#0284c7",
+    fig.add_hrect(y0=0,  y1=60, fillcolor="rgba(251,113,133,0.04)", line_width=0)
+    fig.add_hrect(y0=60, y1=80, fillcolor="rgba(251,191,36,0.04)",  line_width=0)
+    fig.add_hrect(y0=80, y1=105, fillcolor="rgba(96,165,250,0.03)", line_width=0)
+    fig.add_hline(y=80, line_dash="dot", line_color="#60a5fa", line_width=1,
+                  annotation_text="80", annotation_font_color="#60a5fa",
                   annotation_position="left")
-    fig.add_hline(y=60, line_dash="dot", line_color="#f59e0b", line_width=1,
-                  annotation_text="60", annotation_font_color="#f59e0b",
+    fig.add_hline(y=60, line_dash="dot", line_color="#fbbf24", line_width=1,
+                  annotation_text="60", annotation_font_color="#fbbf24",
                   annotation_position="left")
     # y축 하한: 실제 최솟값에서 10점 아래 (최소 0)
     all_scores = [r["점수"] for r in rows]
@@ -767,7 +910,9 @@ def heatmap_fig(df, height=240):
     pivot = (heat.pivot(index="severity", columns="audit_domain", values="건수")
              .reindex(["HIGH", "MEDIUM", "LOW"])
              .reindex(columns=DOMAIN_ORDER, fill_value=0).fillna(0))
-    fig = px.imshow(pivot, color_continuous_scale="Blues",
+    fig = px.imshow(pivot,
+                    color_continuous_scale=[[0, "#f0f7ff"], [0.5, "#a5c8f5"],
+                                            [1, "#60a5fa"]],
                     text_auto=True, aspect="auto", height=height)
     fig.update_traces(textfont_size=14, textfont_color="white")
     fig.update_layout(
@@ -847,7 +992,7 @@ def domain_bar_fig(df, height=200):
                 marker_color="#bfdbfe", text=ddf["이상없음"],
                 textposition="inside", textfont=dict(color="#1e3a5f", size=12))
     fig.add_bar(name="위반", x=ddf["audit_domain"], y=ddf["위반"],
-                marker_color="#ef4444", text=ddf["위반"],
+                marker_color="#f43f5e", text=ddf["위반"],
                 textposition="inside", textfont=dict(color="white", size=12))
     fig.update_traces(texttemplate="%{text}개")
     fig.update_layout(
@@ -930,7 +1075,7 @@ def render_kpis(df, scores, prev_df=None):
     c1, c2, c3, c4 = st.columns(4)
     cards = [
         (c1, avg,   "종합 리스크 점수", g_col,    delta_html(avg,   prev_avg,   "점"), "점"),
-        (c2, viol,  "위반 탐지 규칙",   "#ef4444", delta_html(viol,  prev_viol,  "개"), "개"),
+        (c2, viol,  "위반 탐지 규칙",   "#f43f5e", delta_html(viol,  prev_viol,  "개"), "개"),
         (c3, high,  "HIGH 위반",        "#f59e0b", delta_html(high,  prev_high,  "개"), "개"),
         (c4, clean, "이상 없음",         "#10b981", delta_html(clean, prev_clean, "개"), "개"),
     ]
@@ -946,81 +1091,51 @@ def render_kpis(df, scores, prev_df=None):
 
 
 # ════════════════════════════════════════════════════════════════
-# 사이드바
+# 상단 메뉴바
 # ════════════════════════════════════════════════════════════════
-def render_sidebar():
-    with st.sidebar:
-        # 로고
-        # 로고
+NAV_ITEMS = [
+    ("scan",      "점검 실행",   ":material/play_circle:"),
+    ("overview",  "전체 개요",   ":material/dashboard:"),
+    ("access",    "접근통제",   ":material/lock:"),
+    ("change",    "변경관리",   ":material/sync:"),
+    ("ops",       "운영통제",   ":material/dns:"),
+    ("analysis",  "심화 분석",   ":material/insights:"),
+    ("ai",        "AI 분석",    ":material/smart_toy:"),
+    ("sanctions", "제재 이력",   ":material/gavel:"),
+    ("report",    "보고서 생성", ":material/description:"),
+]
+
+
+def render_topbar():
+    """상단 가로 메뉴바 — 로고 + 분석월 + 가로 네비게이션. month 반환."""
+    # 1행: 로고(좌) + 분석월(우)
+    logo_col, month_col = st.columns([3, 1.1])
+    with logo_col:
         st.markdown("""
-        <div style='padding:1rem 0 1.2rem;'>
-          <div style='font-size:1.15rem;font-weight:900;color:#0f172a;letter-spacing:-0.03em;'>
+        <div style='display:flex;align-items:baseline;gap:10px;padding-top:4px;'>
+          <div style='font-size:1.3rem;font-weight:900;color:#0f172a;letter-spacing:-0.03em;'>
             <i class='fa-solid fa-shield-halved' style='color:#2563eb;margin-right:7px;'></i>IT<span style='color:#2563eb;'>감사</span> 시스템
           </div>
-          <div style='font-size:0.7rem;color:#94a3b8;margin-top:3px;
-                      font-weight:500;letter-spacing:0.06em;text-transform:uppercase;'>
+          <div style='font-size:0.68rem;color:#94a3b8;font-weight:500;
+                      letter-spacing:0.06em;text-transform:uppercase;'>
               AI-Powered Audit Control</div>
         </div>
         """, unsafe_allow_html=True)
-
-        st.markdown("<hr style='margin:0 0 1rem; border-color:#e2e8f0;'>", unsafe_allow_html=True)
-
-        # 분석 월
-        st.markdown("<div style='font-size:0.7rem;color:#94a3b8;font-weight:700;"
-                    "letter-spacing:0.1em;margin-bottom:0.4rem;text-transform:uppercase;'>"
-                    "<i class='fa-regular fa-calendar' style='margin-right:5px;color:#2563eb;'></i>분석 월</div>",
-                    unsafe_allow_html=True)
+    with month_col:
         sel_month = st.selectbox(
             "month", AVAILABLE_MONTHS,
             index=AVAILABLE_MONTHS.index(st.session_state.selected_month),
-            format_func=lambda m: MONTH_LABELS[m],
+            format_func=lambda m: f"📅  {MONTH_LABELS[m]}",
             label_visibility="collapsed")
         if sel_month != st.session_state.selected_month:
             st.session_state.selected_month = sel_month
             st.rerun()
 
-        st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
-
-        # 도메인 필터
-        st.markdown("<div style='font-size:0.7rem;color:#94a3b8;font-weight:700;"
-                    "letter-spacing:0.1em;margin-bottom:0.4rem;text-transform:uppercase;'>"
-                    "<i class='fa-solid fa-filter' style='margin-right:5px;color:#2563eb;'></i>도메인 필터</div>",
-                    unsafe_allow_html=True)
-        domains = st.multiselect("domains", DOMAIN_ORDER,
-                                 default=st.session_state.filter_domains,
-                                 label_visibility="collapsed")
-        if not domains: domains = DOMAIN_ORDER
-        st.session_state.filter_domains = domains
-
-        # 심각도 필터
-        st.markdown("<div style='font-size:0.7rem;color:#94a3b8;font-weight:700;"
-                    "letter-spacing:0.1em;text-transform:uppercase;margin:0.8rem 0 0.4rem;'>"
-                    "<i class='fa-solid fa-bolt' style='margin-right:5px;color:#2563eb;'></i>심각도 필터</div>",
-                    unsafe_allow_html=True)
-        sevs = st.multiselect("sevs", ["HIGH", "MEDIUM", "LOW"],
-                              default=st.session_state.filter_sevs,
-                              label_visibility="collapsed")
-        if not sevs: sevs = ["HIGH", "MEDIUM", "LOW"]
-        st.session_state.filter_sevs = sevs
-
-        st.markdown("<hr style='margin:1rem 0; border-color:#e2e8f0;'>", unsafe_allow_html=True)
-
-        # 내비게이션
-        st.markdown("<div style='font-size:0.7rem;color:#94a3b8;"
-                    "font-weight:700;letter-spacing:0.1em;margin-bottom:0.5rem;'>"
-                    "MENU</div>", unsafe_allow_html=True)
-
-        nav_items = [
-            ("scan",      "점검 실행",   ":material/play_circle:"),
-            ("overview",  "전체 개요",   ":material/dashboard:"),
-            ("access",    "접근통제",   ":material/lock:"),
-            ("change",    "변경관리",   ":material/sync:"),
-            ("ops",       "운영통제",   ":material/dns:"),
-            ("analysis",  "심화 분석",   ":material/insights:"),
-            ("ai",        "AI 분석",    ":material/smart_toy:"),
-            ("report",    "보고서 생성", ":material/description:"),
-        ]
-        for key, label, icon in nav_items:
+    # 2행: 가로 메뉴 (책갈피 텍스트 탭)
+    nav_box = st.container(key="topnav")
+    nav_cols = nav_box.columns(len(NAV_ITEMS))
+    for col, (key, label, icon) in zip(nav_cols, NAV_ITEMS):
+        with col:
             is_active = st.session_state.view == key
             if st.button(label, key=f"nav_{key}", icon=icon,
                          use_container_width=True,
@@ -1028,32 +1143,57 @@ def render_sidebar():
                 st.session_state.view = key
                 st.rerun()
 
-        st.markdown("<hr style='margin:1rem 0; border-color:#e2e8f0;'>", unsafe_allow_html=True)
+    st.markdown("<hr style='margin:-0.3rem 0 1rem; border:none; "
+                "border-top:1px solid #e2e8f0;'>", unsafe_allow_html=True)
+    return sel_month
 
-        # 마지막 점검 (세션 없으면 결과 파일 수정시각 사용)
-        _last = st.session_state.last_scan
-        if not _last and os.path.exists(SUMMARY_PATH):
-            _last = datetime.fromtimestamp(
-                os.path.getmtime(SUMMARY_PATH)).strftime("%Y-%m-%d %H:%M")
-        if _last:
-            st.markdown(
-                f"<div style='font-size:0.72rem;color:#94a3b8;'>"
-                f"<i class='fa-regular fa-clock' style='margin-right:5px;color:#2563eb;'></i>마지막 점검<br>"
-                f"<b style='color:#475569;'>{_last}</b></div>",
-                unsafe_allow_html=True)
 
-    return sel_month, domains, sevs
+def filter_bar(show_domain=True, show_sev=True):
+    """화면 내부 인라인 필터 바 (라벨 + 구분선). (domains, sevs) 반환."""
+    domains = st.session_state.filter_domains
+    sevs    = st.session_state.filter_sevs
+    if not (show_domain or show_sev):
+        return domains, sevs
+
+    # 태그가 한 줄에 다 보이도록 넓게 배치
+    if show_domain and show_sev:
+        cols = st.columns(2)          # 도메인 50% / 심각도 50%
+    else:
+        cols = st.columns([1, 1.4])   # 심각도만 — 넉넉히
+    idx = 0
+    if show_domain:
+        with cols[idx]:
+            domains = st.multiselect(
+                "도메인", DOMAIN_ORDER,
+                default=st.session_state.filter_domains,
+                key="flt_domain", placeholder="전체 도메인")
+            if not domains: domains = DOMAIN_ORDER
+            st.session_state.filter_domains = domains
+        idx += 1
+    if show_sev:
+        with cols[idx]:
+            sevs = st.multiselect(
+                "심각도", ["HIGH", "MEDIUM", "LOW"],
+                default=st.session_state.filter_sevs,
+                key="flt_sev", placeholder="전체 심각도")
+            if not sevs: sevs = ["HIGH", "MEDIUM", "LOW"]
+            st.session_state.filter_sevs = sevs
+
+    st.markdown("<hr style='margin:0.3rem 0 1rem; border:none; "
+                "border-top:1px solid var(--border);'>", unsafe_allow_html=True)
+    return domains, sevs
 
 
 # ════════════════════════════════════════════════════════════════
 # VIEW: 전체 개요  (3구역)
 # ════════════════════════════════════════════════════════════════
-def view_overview(month, domains, sevs):
+def view_overview(month):
     df = load_summary(month)
     if df is None:
         st.warning("점검 결과 없음 — '점검 실행' 메뉴에서 먼저 점검을 실행해주세요.")
         return
 
+    domains, sevs = filter_bar(show_domain=True, show_sev=True)
     fdf     = apply_filters(df, domains, sevs)
     scores  = calc_scores(df, month=month)
     m_idx   = AVAILABLE_MONTHS.index(month)
@@ -1079,7 +1219,7 @@ def view_overview(month, domains, sevs):
     delta_html = ""
     if score_delta is not None:
         sym = "▲" if score_delta >= 0 else "▼"
-        delta_col = "#10b981" if score_delta >= 0 else "#ef4444"
+        delta_col = "#10b981" if score_delta >= 0 else "#f43f5e"
         delta_html = (f"<span style='font-size:0.85rem;font-weight:600;"
                       f"color:{delta_col};margin-left:10px;'>"
                       f"{sym} {abs(score_delta)}점 전월 대비</span>")
@@ -1113,7 +1253,7 @@ def view_overview(month, domains, sevs):
         viol  = int((sub["yn_violation"] == "Y").sum())
         total = len(sub)
         high  = int(((sub["severity"] == "HIGH") & (sub["yn_violation"] == "Y")).sum())
-        high_str = f" · HIGH <b style='color:#ef4444;'>{high}건</b>" if high > 0 else ""
+        high_str = f" · HIGH <b style='color:#f43f5e;'>{high}건</b>" if high > 0 else ""
         with col:
             st.markdown(
                 f"<div style='background:white;border-radius:14px;padding:1rem 1.1rem;"
@@ -1176,7 +1316,7 @@ def view_overview(month, domains, sevs):
     tab_r, tab_n, tab_h = st.tabs([
         f"반복 위반  {n_repeat}건",
         f"신규 위반  {n_new}건",
-        f"해소 완료  {n_resolved}건",
+        f"해결 완료  {n_resolved}건",
     ])
     with tab_r:
         st.caption("전월과 이번 달 모두 동일 규칙 위반 — 즉시 조치 필요")
@@ -1186,7 +1326,7 @@ def view_overview(month, domains, sevs):
         _viol_table(new_df, "신규 위반 없음")
     with tab_h:
         st.caption("전월 위반이 이번 달 정상화 — 조치 효과 확인")
-        _viol_table(resolved_df, "해소된 위반 없음")
+        _viol_table(resolved_df, "해결된 위반 없음")
 
     st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
 
@@ -1231,7 +1371,7 @@ def view_ai(month):
                 "<i class='fa-solid fa-robot' style='color:#2563eb;"
                 "margin-right:8px;font-size:1.1rem;'></i>AI 분석</div>",
                 unsafe_allow_html=True)
-    st.markdown(f"<div class='view-sub'>{MONTH_LABELS[month]} 기준 · Claude 기반 감사 인사이트</div>",
+    st.markdown(f"<div class='view-sub'>{MONTH_LABELS[month]} 기준 · Claude 기반 점검 결과 인사이트</div>",
                 unsafe_allow_html=True)
 
     if df is None:
@@ -1248,7 +1388,7 @@ def view_ai(month):
     for col, icon, title, desc in [
         (ca, "fa-magnifying-glass-chart", "위반 패턴 분석", "어느 영역이 집중 위반인지, 반복 원인 해석"),
         (cb, "fa-list-ol",                "우선 조치 Top 5", "가장 먼저 처리할 항목과 구체적 조치 방법"),
-        (cc, "fa-file-signature",         "감사 총평 초안",  "경영진 보고용 한 단락 요약 자동 작성"),
+        (cc, "fa-file-signature",         "점검 총평 초안",  "경영진 보고용 한 단락 요약 자동 작성"),
     ]:
         with col:
             st.markdown(
@@ -1274,49 +1414,62 @@ def view_ai(month):
                 st.rerun()
 
     if run_ai:
-        st.session_state[ai_key] = None
-
-    st.markdown("<div class='dash-card'>", unsafe_allow_html=True)
-    if run_ai:
-        context    = build_audit_context(df, month, scores, n_repeat, n_new, n_resolved)
-        result_box = st.empty()
-        full_text  = ""
-        with st.spinner("Claude가 감사 결과를 분석하는 중..."):
+        # 생성 과정은 숨기고 스피너만 → 완료 후 rerun → 요약 뷰
+        context   = build_audit_context(df, month, scores, n_repeat, n_new, n_resolved)
+        full_text = ""
+        with st.spinner("⏳  AI가 점검 결과를 분석하고 있습니다…"):
             for chunk in stream_ai_insights(context):
                 full_text += chunk
-                result_box.markdown(full_text)
         st.session_state[ai_key] = full_text
-
-        # 팩트 검증
-        warnings = verify_ai_response(full_text, df, scores, n_repeat, n_new)
-        if warnings:
-            st.session_state[f"{ai_key}_warnings"] = warnings
+        st.session_state[f"{ai_key}_warnings"] = \
+            verify_ai_response(full_text, df, scores, n_repeat, n_new)
+        st.rerun()
 
     elif st.session_state.get(ai_key):
-        st.markdown(st.session_state[ai_key])
-        # 저장된 경고 표시
-        saved_w = st.session_state.get(f"{ai_key}_warnings", [])
-        if saved_w:
-            with st.expander("팩트 검증 결과 — 확인 필요 항목", expanded=True):
-                for w in saved_w:
-                    st.warning(w)
-        else:
-            st.caption("팩트 검증 통과 — 응답 내 수치가 실제 데이터와 일치합니다.")
+        render_ai_result(st.session_state[ai_key],
+                         st.session_state.get(f"{ai_key}_warnings", []))
     else:
         st.markdown(
-            "<p style='color:#94a3b8;padding:1rem 0;'>"
-            "위 <b>분석 실행</b> 버튼을 누르면 Claude가 이번 달 감사 결과를 분석합니다.</p>",
+            "<div class='dash-card'>"
+            "<p style='color:#94a3b8;margin:0.5rem 0;'>"
+            "위 <b>분석 실행</b> 버튼을 누르면 Claude가 이번 달 점검 결과를 "
+            "분석하여 핵심 요약과 세 가지 섹션으로 정리해드립니다.</p></div>",
             unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
 
-    # ── 금감원 IT 제재 이력 ────────────────────────────────────────
-    st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
-    st.markdown(
-        "<div class='dash-card'>"
-        "<div class='card-title'>"
-        "<i class='fa-solid fa-landmark fa-sm'></i>  "
-        "금융감독원 IT 제재 이력</div>",
-        unsafe_allow_html=True)
+
+# 통제 영역 매핑 — 제재 사례 키워드 ↔ 우리 점검 규칙 키워드
+SANCTION_TOPIC_MAP = {
+    "변경관리·배포 통제": {
+        "sanction_kw": ["프로그램", "변경", "배포", "테스트", "이관", "차세대",
+                        "운영시스템", "검증", "반출", "소스"],
+        "our_kw":      ["배포", "변경", "승인", "직무분리", "조작", "CR", "이관"],
+    },
+    "백업·복구 통제": {
+        "sanction_kw": ["백업", "복구", "이중화", "재해", "장애"],
+        "our_kw":      ["백업", "복구"],
+    },
+    "접근·권한 통제": {
+        "sanction_kw": ["접근", "권한", "계정", "인증", "비밀번호", "출입", "패스워드"],
+        "our_kw":      ["권한", "접근", "계정", "비밀번호", "출입", "인증", "퇴직"],
+    },
+    "정보보호·암호화 통제": {
+        "sanction_kw": ["암호", "정보보호", "보안", "개인정보", "망분리", "유출"],
+        "our_kw":      ["암호", "보안", "정보보호", "개인정보", "망분리"],
+    },
+}
+
+
+# ════════════════════════════════════════════════════════════════
+# VIEW: 금융감독원 제재 이력
+# ════════════════════════════════════════════════════════════════
+def view_sanctions(month):
+    st.markdown("<div class='view-header'>"
+                "<i class='fa-solid fa-landmark' style='color:#2563eb;"
+                "margin-right:8px;font-size:1.1rem;'></i>금융감독원 IT 제재 이력</div>",
+                unsafe_allow_html=True)
+    st.markdown("<div class='view-sub'>IT검사국·전자금융검사국 실제 제재 사례 · "
+                "출처: 금융감독원 제재관련공시 (공공누리 제1유형)</div>",
+                unsafe_allow_html=True)
 
     sanctions_path = os.path.join(DATA_DIR, "fss_sanctions.json")
     if not os.path.exists(sanctions_path):
@@ -1324,118 +1477,191 @@ def view_ai(month):
         if st.button("금감원 제재 이력 수집", type="primary"):
             with st.spinner("금융감독원 공시 수집 중... (약 60초)"):
                 res = subprocess.run(
-                    [sys.executable,
-                     os.path.join(SRC_DIR, "fss_collector.py"),
+                    [sys.executable, os.path.join(SRC_DIR, "fss_collector.py"),
                      "--max-pages", "50"],
                     capture_output=True, text=True, cwd=BASE_DIR)
             if res.returncode == 0:
                 st.success("수집 완료! 새로고침 해주세요.")
             else:
-                st.error("수집 실패")
-                st.code(res.stderr[:500])
+                st.error("수집 실패"); st.code(res.stderr[:500])
+        return
+
+    with open(sanctions_path, encoding="utf-8") as f:
+        sanctions_data = json.load(f)
+    items     = sanctions_data.get("items", [])
+    collected = sanctions_data.get("collected_at", "")[:10]
+
+    # 현재 점검에서 탐지된 위반 규칙
+    df = load_summary(month)
+    if df is not None:
+        viol_df = df[df["yn_violation"] == "Y"][
+            ["rule_id","rule_nm","condition_desc","violation_count",
+             "severity","audit_domain"]].copy()
     else:
-        with open(sanctions_path, encoding="utf-8") as f:
-            sanctions_data = json.load(f)
+        viol_df = pd.DataFrame()
 
-        items     = sanctions_data.get("items", [])
-        collected = sanctions_data.get("collected_at", "")[:10]
+    def _is_garbled(t):
+        """한글 비율이 너무 낮으면 깨진 추출로 판단"""
+        if not t:
+            return True
+        import re as _re
+        han = len(_re.findall(r"[가-힣]", t))
+        return han < 10 or han < len(t) * 0.25
 
-        # 현재 탐지된 위반 키워드 추출 (관련성 표시용)
-        current_keywords = set()
-        for _, row in df[df["yn_violation"] == "Y"].iterrows():
-            import re as _re
-            for w in _re.findall(r"[가-힣]{2,}", str(row.get("rule_nm","")) +
-                                  " " + str(row.get("condition_desc",""))):
-                current_keywords.add(w)
+    # 제재 사례 ↔ 우리 점검 위반 규칙 매칭 (통제 영역 단위)
+    def _match_controls(item):
+        # 제재 사례의 깨지지 않은 위반 텍스트
+        vtext = " ".join(v for v in item.get("violations", [])
+                         if not _is_garbled(v))
+        snip = item.get("pdf_text_snippet", "")
+        if not _is_garbled(snip):
+            vtext += " " + snip
+        results = []
+        if viol_df.empty or not vtext.strip():
+            return results
+        for topic, kw in SANCTION_TOPIC_MAP.items():
+            if not any(k in vtext for k in kw["sanction_kw"]):
+                continue
+            rules = []
+            for _, row in viol_df.iterrows():
+                rt = str(row["rule_nm"]) + " " + str(row.get("condition_desc",""))
+                if any(k in rt for k in kw["our_kw"]):
+                    rules.append(row)
+            if rules:
+                results.append((topic, rules))
+        return results
 
-        st.caption(
-            f"IT검사국·전자금융검사국 제재 {len(items)}건 수집 | "
-            f"기준일: {collected} | "
-            f"출처: 금융감독원 제재관련공시 (공공누리 제1유형)")
-        st.markdown(
-            "<p style='font-size:0.8rem;color:#64748b;margin:0.3rem 0 0.8rem;'>"
-            "아래는 금감원이 실제 금융사에 IT 관련 제재를 내린 사례입니다. "
-            "<b style='color:#ef4444;'>관련 가능성</b> 표시는 현재 탐지된 위반과 "
-            "키워드가 겹치는 사례입니다.</p>", unsafe_allow_html=True)
+    # ── 검색 / 필터 바 ──
+    sc1, sc2 = st.columns([3, 1.3])
+    with sc1:
+        query = st.text_input(
+            "검색", key="sanction_q", label_visibility="collapsed",
+            placeholder="🔍  기관명·위반 키워드 검색  (예: 백업, 접근통제, 전자금융)")
+    with sc2:
+        only_related = st.toggle("관련 사례만", value=False,
+                                 help="우리 점검 위반과 같은 통제 영역의 제재 사례만 표시")
 
-        for item in items:
-            date_str = item.get("date", "")
-            date_fmt = (f"{date_str[:4]}.{date_str[4:6]}.{date_str[6:]}"
-                        if len(date_str) == 8 else date_str)
-            institution = item.get("institution", "")
-            dept        = item.get("department", "")
-            violations  = item.get("violations", [])
-            pdf_snippet = item.get("pdf_text_snippet", "")
+    filtered = []
+    for item in items:
+        item_text = (item.get("institution","") + " " + item.get("department","") +
+                     " " + " ".join(item.get("violations", [])) + " " +
+                     item.get("pdf_text_snippet", ""))
+        matches = _match_controls(item)
+        is_related = bool(matches)
+        if query and query.strip() and query.strip() not in item_text:
+            continue
+        if only_related and not is_related:
+            continue
+        filtered.append((item, is_related, matches))
 
-            # 관련성 계산: 수집된 위반 내용과 현재 위반 키워드 교집합
-            item_text = " ".join(violations) + " " + pdf_snippet
-            rel_keywords = [k for k in current_keywords
-                            if k in item_text and len(k) >= 3]
-            is_related = len(rel_keywords) >= 2
+    st.caption(f"전체 {len(items)}건 중 {len(filtered)}건 표시 | 기준일: {collected}")
+    st.markdown(
+        "<p style='font-size:0.82rem;color:#64748b;margin:0.2rem 0 0.9rem;'>"
+        "<b style='color:#f43f5e;'>관련 가능성</b> 배지가 붙은 사례는, 그 회사가 제재받은 "
+        "통제 영역(예: 변경관리·백업)에서 <b>우리 점검에서도 동일하게 위반이 탐지된</b> "
+        "경우입니다. 사례를 펼치면 우리 점검의 어떤 규칙이 해당되는지 보여줍니다.</p>",
+        unsafe_allow_html=True)
 
-            border_color = "#ef4444" if is_related else "#e0f2fe"
-            badge = (f"<span style='background:#fef2f2;color:#ef4444;"
-                     f"font-size:0.7rem;font-weight:700;padding:2px 8px;"
-                     f"border-radius:999px;margin-left:8px;'>관련 가능성</span>"
-                     if is_related else "")
+    if not filtered:
+        st.info("검색 결과가 없습니다.")
+    for item, is_related, matches in filtered:
+        date_str = item.get("date", "")
+        date_fmt = (f"{date_str[:4]}.{date_str[4:6]}.{date_str[6:]}"
+                    if len(date_str) == 8 else date_str)
+        institution = item.get("institution", "")
+        dept        = item.get("department", "")
+        violations  = item.get("violations", [])
+        pdf_snippet = item.get("pdf_text_snippet", "")
 
-            with st.expander(
-                    f"{date_fmt}  |  {institution}  |  {dept}{' ⚠' if is_related else ''}",
-                    expanded=is_related):
+        border_color = "#f43f5e" if is_related else "#e0f2fe"
+        badge = (f"<span style='background:#fef2f2;color:#f43f5e;"
+                 f"font-size:0.7rem;font-weight:700;padding:2px 8px;"
+                 f"border-radius:999px;margin-left:8px;'>관련 가능성</span>"
+                 if is_related else "")
+
+        with st.expander(
+                f"{date_fmt}   |   {institution}   |   {dept}{'   ⚠ 관련' if is_related else ''}",
+                expanded=is_related and bool(query)):
+            st.markdown(
+                f"<div style='padding:0.3rem 0;border-left:3px solid {border_color};"
+                f"padding-left:0.8rem;'>"
+                f"<div style='font-size:0.9rem;font-weight:700;color:#1e293b;'>"
+                f"{institution}{badge}</div>"
+                f"<div style='font-size:0.76rem;color:#64748b;margin-top:0.2rem;'>"
+                f"{date_fmt} &nbsp;·&nbsp; {dept}</div></div>",
+                unsafe_allow_html=True)
+
+            # 제재 사례의 위반 내용
+            clean_violations = [v for v in violations if not _is_garbled(v)]
+            if clean_violations:
                 st.markdown(
-                    f"<div style='padding:0.3rem 0;border-left:3px solid {border_color};"
-                    f"padding-left:0.8rem;'>"
-                    f"<div style='font-size:0.82rem;font-weight:700;color:#1e293b;'>"
-                    f"{institution}{badge}</div>"
-                    f"<div style='font-size:0.75rem;color:#64748b;margin-top:0.2rem;'>"
-                    f"{date_fmt} &nbsp;·&nbsp; {dept}</div>"
-                    f"</div>", unsafe_allow_html=True)
-
-                if violations:
+                    "<div style='font-size:0.82rem;font-weight:700;"
+                    "color:#334155;margin:0.6rem 0 0.3rem;'>이 회사가 제재받은 내용</div>",
+                    unsafe_allow_html=True)
+                for v in clean_violations[:8]:
                     st.markdown(
-                        "<div style='font-size:0.78rem;font-weight:700;"
-                        "color:#334155;margin:0.6rem 0 0.3rem;'>주요 위반 내용</div>",
-                        unsafe_allow_html=True)
-                    for v in violations[:8]:
-                        st.markdown(
-                            f"<div style='font-size:0.8rem;color:#475569;"
-                            f"padding:0.25rem 0;border-bottom:1px solid #f1f5f9;'>"
-                            f"▸ {v}</div>", unsafe_allow_html=True)
-                elif pdf_snippet:
-                    st.markdown(
-                        f"<div style='font-size:0.78rem;color:#64748b;"
-                        f"white-space:pre-line;'>{pdf_snippet[:400]}</div>",
-                        unsafe_allow_html=True)
-                else:
-                    st.caption("위반 내용 상세는 금감원 원본 PDF를 참조하세요.")
+                        f"<div style='font-size:0.82rem;color:#475569;"
+                        f"padding:0.25rem 0;border-bottom:1px solid #f1f5f9;'>"
+                        f"▸ {v}</div>", unsafe_allow_html=True)
+            elif pdf_snippet and not _is_garbled(pdf_snippet):
+                st.markdown(
+                    f"<div style='font-size:0.8rem;color:#64748b;"
+                    f"white-space:pre-line;'>{pdf_snippet[:400]}</div>",
+                    unsafe_allow_html=True)
+            else:
+                st.caption("이 PDF는 자동 텍스트 추출이 어려워 위반 내용을 "
+                           "표시할 수 없습니다. 아래 원본 PDF에서 확인해주세요.")
 
-                if item.get("pdf_urls"):
-                    st.markdown(
-                        f"[원본 PDF 보기]({item['pdf_urls'][0]})",
-                        unsafe_allow_html=False)
+            # 우리 점검과의 연결 — 같은 통제 영역의 우리 위반 규칙
+            if is_related and matches:
+                blocks = ""
+                for topic, rules in matches:
+                    rule_items = "".join(
+                        f"<div style='font-size:0.8rem;color:#334155;padding:0.18rem 0;'>"
+                        f"• <b>{r['rule_id']}</b> {r['rule_nm']} &nbsp;"
+                        f"<span style='color:#e11d48;font-weight:700;'>"
+                        f"{int(r['violation_count'])}건</span></div>"
+                        for r in rules[:3])
+                    blocks += (
+                        f"<div style='margin-bottom:0.45rem;'>"
+                        f"<span style='font-size:0.73rem;font-weight:700;color:#2563eb;"
+                        f"background:#eff6ff;padding:2px 9px;border-radius:6px;'>{topic}</span>"
+                        f"<div style='margin-top:0.25rem;'>{rule_items}</div></div>")
+                st.markdown(
+                    f"<div style='margin-top:0.7rem;background:#fff7f8;"
+                    f"border:1px solid #fecdd3;border-radius:10px;padding:0.75rem 0.95rem;'>"
+                    f"<div style='font-size:0.82rem;font-weight:800;color:#e11d48;"
+                    f"margin-bottom:0.5rem;'>"
+                    f"<i class='fa-solid fa-triangle-exclamation'></i>&nbsp; "
+                    f"우리 점검에서도 같은 영역이 미흡합니다</div>"
+                    f"{blocks}"
+                    f"<div style='font-size:0.73rem;color:#94a3b8;margin-top:0.4rem;'>"
+                    f"이 회사가 제재받은 통제 영역에서 우리도 위반이 탐지되었습니다. "
+                    f"방치 시 유사 제재 대상이 될 수 있어 우선 조치를 권고합니다.</div></div>",
+                    unsafe_allow_html=True)
 
-        c1, _ = st.columns([1, 5])
-        with c1:
-            if st.button("데이터 업데이트", key="update_sanctions"):
-                with st.spinner("금융감독원 공시 재수집 중..."):
-                    subprocess.run(
-                        [sys.executable,
-                         os.path.join(SRC_DIR, "fss_collector.py"),
-                         "--max-pages", "50"],
-                        capture_output=True, text=True, cwd=BASE_DIR)
-                st.success("업데이트 완료!")
-                st.rerun()
+            if item.get("pdf_urls"):
+                st.markdown(f"[원본 PDF 보기]({item['pdf_urls'][0]})")
 
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:0.6rem'></div>", unsafe_allow_html=True)
+    if st.button("데이터 업데이트", key="update_sanctions"):
+        with st.spinner("금융감독원 공시 재수집 중..."):
+            subprocess.run(
+                [sys.executable, os.path.join(SRC_DIR, "fss_collector.py"),
+                 "--max-pages", "50"],
+                capture_output=True, text=True, cwd=BASE_DIR)
+        st.success("업데이트 완료!")
+        st.rerun()
 
 
 # ════════════════════════════════════════════════════════════════
-def view_domain(month, domain, sevs):
+def view_domain(month, domain):
     df = load_summary(month)
     if df is None:
         st.warning("점검 결과 없음 — '점검 실행' 메뉴에서 먼저 점검을 실행해주세요.")
         return
 
+    _, sevs = filter_bar(show_domain=False, show_sev=True)
     sub = apply_filters(df, [domain], sevs)
     scores = calc_scores(df, month=month)
     score  = scores.get(domain, 100)
@@ -1464,7 +1690,7 @@ def view_domain(month, domain, sevs):
                     f"<div class='dl' style='color:{g_col};font-weight:700;'>{g_lbl}</div>"
                     f"</div>", unsafe_allow_html=True)
     with c2:
-        st.markdown(f"<div class='kpi-box' style='--accent:#ef4444;'>"
+        st.markdown(f"<div class='kpi-box' style='--accent:#f43f5e;'>"
                     f"<div class='val'>{violated}개</div>"
                     f"<div class='lbl'>위반 탐지 규칙</div></div>",
                     unsafe_allow_html=True)
@@ -1525,9 +1751,9 @@ def view_domain(month, domain, sevs):
         st.markdown(f"""
         <div style='display:flex;gap:0.5rem;margin-bottom:0.5rem;'>
           <div style='flex:1;padding:0.55rem 0.8rem;border-radius:10px;
-                      background:#fef2f2;border-left:3px solid #ef4444;'>
-            <span style='font-size:1.3rem;font-weight:900;color:#ef4444;'>{n_repeat}</span>
-            <span style='font-size:0.72rem;color:#ef4444;font-weight:700;margin-left:4px;'>반복 위반</span>
+                      background:#fef2f2;border-left:3px solid #f43f5e;'>
+            <span style='font-size:1.3rem;font-weight:900;color:#f43f5e;'>{n_repeat}</span>
+            <span style='font-size:0.72rem;color:#f43f5e;font-weight:700;margin-left:4px;'>반복 위반</span>
             <div style='font-size:0.66rem;color:#94a3b8;'>전월 동일 규칙 위반 지속</div>
           </div>
           <div style='flex:1;padding:0.55rem 0.8rem;border-radius:10px;
@@ -1539,7 +1765,7 @@ def view_domain(month, domain, sevs):
           <div style='flex:1;padding:0.55rem 0.8rem;border-radius:10px;
                       background:#f0fdf4;border-left:3px solid #10b981;'>
             <span style='font-size:1.3rem;font-weight:900;color:#10b981;'>{n_resolved}</span>
-            <span style='font-size:0.72rem;color:#10b981;font-weight:700;margin-left:4px;'>해소 완료</span>
+            <span style='font-size:0.72rem;color:#10b981;font-weight:700;margin-left:4px;'>해결 완료</span>
             <div style='font-size:0.66rem;color:#94a3b8;'>전월 위반 이번 달 정상화</div>
           </div>
         </div>
@@ -1557,9 +1783,6 @@ def view_domain(month, domain, sevs):
         st.markdown("</div>", unsafe_allow_html=True)
 
     with c4:
-        st.markdown("<div class='dash-card'>"
-                    "<div class='card-title'><i class='fa-solid fa-list-check fa-sm'></i>  위반 규칙 목록</div>",
-                    unsafe_allow_html=True)
         viol_rows = tagged_sub[tagged_sub["yn_violation"] == "Y"].sort_values(
             ["위반상태", "violation_count"], ascending=[True, False])
         # 상태 배지 HTML 렌더링
@@ -1571,25 +1794,28 @@ def view_domain(month, domain, sevs):
             sev_css = f"color:{SEV_COLORS.get(r['severity'], '#666')};font-weight:700;"
             rows_html += (
                 f"<tr style='border-bottom:1px solid #f1f5f9;'>"
-                f"<td style='padding:6px 4px;font-size:0.78rem;color:#334155;'>{r['rule_id']}</td>"
-                f"<td style='padding:6px 4px;font-size:0.78rem;color:#1e293b;'>{r['rule_nm'][:18]}{'…' if len(r['rule_nm'])>18 else ''}</td>"
-                f"<td style='padding:6px 4px;font-size:0.78rem;{sev_css}'>{r['severity']}</td>"
-                f"<td style='padding:6px 4px;font-size:0.78rem;font-weight:700;color:#1e293b;text-align:right;'>{int(r['violation_count'])}건</td>"
-                f"<td style='padding:6px 4px;'>{badge}</td>"
+                f"<td style='padding:7px 6px;font-size:0.78rem;color:#334155;'>{r['rule_id']}</td>"
+                f"<td style='padding:7px 6px;font-size:0.78rem;color:#1e293b;'>{r['rule_nm'][:18]}{'…' if len(r['rule_nm'])>18 else ''}</td>"
+                f"<td style='padding:7px 6px;font-size:0.78rem;{sev_css}'>{r['severity']}</td>"
+                f"<td style='padding:7px 6px;font-size:0.78rem;font-weight:700;color:#1e293b;text-align:right;'>{int(r['violation_count'])}건</td>"
+                f"<td style='padding:7px 6px;'>{badge}</td>"
                 f"</tr>"
             )
+        # 카드 + 테이블을 하나의 흰 배경 div로 (분리 방지)
         st.markdown(
-            f"<div style='overflow-y:auto;max-height:260px;'>"
-            f"<table style='width:100%;border-collapse:collapse;'>"
-            f"<thead><tr style='border-bottom:2px solid #e2e8f0;'>"
-            f"<th style='padding:6px 4px;font-size:0.7rem;color:#94a3b8;font-weight:700;text-align:left;'>ID</th>"
-            f"<th style='padding:6px 4px;font-size:0.7rem;color:#94a3b8;font-weight:700;text-align:left;'>규칙명</th>"
-            f"<th style='padding:6px 4px;font-size:0.7rem;color:#94a3b8;font-weight:700;text-align:left;'>등급</th>"
-            f"<th style='padding:6px 4px;font-size:0.7rem;color:#94a3b8;font-weight:700;text-align:right;'>건수</th>"
-            f"<th style='padding:6px 4px;font-size:0.7rem;color:#94a3b8;font-weight:700;text-align:left;'>상태</th>"
-            f"</tr></thead><tbody>{rows_html}</tbody></table></div>",
+            f"<div class='dash-card'>"
+            f"<div class='card-title'><i class='fa-solid fa-list-check fa-sm'></i>  위반 규칙 목록</div>"
+            f"<div style='overflow-y:auto;max-height:270px;background:#ffffff;border-radius:10px;'>"
+            f"<table style='width:100%;border-collapse:collapse;background:#ffffff;'>"
+            f"<thead><tr style='border-bottom:2px solid #e2e8f0;background:#f8fafc;'>"
+            f"<th style='padding:8px 6px;font-size:0.7rem;color:#94a3b8;font-weight:700;text-align:left;'>ID</th>"
+            f"<th style='padding:8px 6px;font-size:0.7rem;color:#94a3b8;font-weight:700;text-align:left;'>규칙명</th>"
+            f"<th style='padding:8px 6px;font-size:0.7rem;color:#94a3b8;font-weight:700;text-align:left;'>등급</th>"
+            f"<th style='padding:8px 6px;font-size:0.7rem;color:#94a3b8;font-weight:700;text-align:right;'>건수</th>"
+            f"<th style='padding:8px 6px;font-size:0.7rem;color:#94a3b8;font-weight:700;text-align:left;'>상태</th>"
+            f"</tr></thead><tbody>{rows_html}</tbody></table></div>"
+            f"</div>",
             unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
 
 
 # ════════════════════════════════════════════════════════════════
@@ -1680,7 +1906,7 @@ def view_analysis(month):
             fig_b = go.Figure(go.Bar(
                 x=top10["위험점수"], y=top10["dept_nm"],
                 orientation="h",
-                marker_color=["#ef4444" if s>=10 else "#f59e0b" if s>=5 else "#3b82f6"
+                marker_color=["#f43f5e" if s>=10 else "#f59e0b" if s>=5 else "#3b82f6"
                               for s in top10["위험점수"]],
                 text=top10["위험점수"], textposition="outside",
             ))
@@ -1735,7 +1961,7 @@ def view_analysis(month):
             st.markdown("<div class='dash-card'><div class='card-title'><i class='fa-solid fa-users fa-sm'></i>  역할별 접근통제 위반 현황</div>",
                         unsafe_allow_html=True)
             fig_r = go.Figure()
-            colors_r = ["#ef4444","#f59e0b","#9b59b6"]
+            colors_r = ["#f43f5e","#f59e0b","#9b59b6"]
             for i, (col, color) in enumerate(zip(role_df.columns, colors_r)):
                 fig_r.add_trace(go.Bar(name=col, x=labels, y=role_df[col], marker_color=color))
             fig_r.update_layout(barmode="group", height=300,
@@ -1757,7 +1983,7 @@ def view_analysis(month):
                         unsafe_allow_html=True)
             fig_rate = go.Figure(go.Bar(
                 x=labels, y=role_rate.values,
-                marker_color=["#ef4444" if v>20 else "#f59e0b" if v>10 else "#3b82f6"
+                marker_color=["#f43f5e" if v>20 else "#f59e0b" if v>10 else "#3b82f6"
                               for v in role_rate.values],
                 text=[f"{v}%" for v in role_rate.values],
                 textposition="outside",
@@ -1801,7 +2027,7 @@ def view_analysis(month):
             else:      return "이상없음"
         df_r["위험등급"] = df_r["위험점수"].apply(risk_grade)
 
-        grade_colors = {"Critical":"#8B0000","High":"#ef4444",
+        grade_colors = {"Critical":"#8B0000","High":"#f43f5e",
                         "Medium":"#f59e0b","Low":"#3b82f6","이상없음":"#64748b"}
 
         c1, c2 = st.columns(2)
@@ -1901,7 +2127,7 @@ def view_analysis(month):
             fig_comp = go.Figure(go.Bar(
                 x=law_comp["준수율(%)"], y=law_comp["법령명"],
                 orientation="h",
-                marker_color=["#ef4444" if v<50 else "#f59e0b" if v<75 else "#10b981"
+                marker_color=["#f43f5e" if v<50 else "#f59e0b" if v<75 else "#10b981"
                               for v in law_comp["준수율(%)"]],
                 text=[f"{v}%" for v in law_comp["준수율(%)"]],
                 textposition="outside",
@@ -1922,7 +2148,7 @@ def view_analysis(month):
             fig_law = go.Figure(go.Bar(
                 x=law_sum["위반규칙수"], y=law_sum["source_law"],
                 orientation="h",
-                marker_color=["#ef4444" if h>0 else "#3b82f6" for h in law_sum["HIGH건수"]],
+                marker_color=["#f43f5e" if h>0 else "#3b82f6" for h in law_sum["HIGH건수"]],
                 text=[f"{v}개" + (f" (HIGH {h})" if h>0 else "")
                       for v,h in zip(law_sum["위반규칙수"],law_sum["HIGH건수"])],
                 textposition="outside",
@@ -2010,7 +2236,7 @@ def view_analysis(month):
             top_dept = result["부서"].value_counts().idxmax() if n_multi else "-"
             ck, cv, cd = st.columns(3)
             for col, val, lbl, color in [
-                (ck, f"{n_multi}명",  "복합 위반 사용자",    "#ef4444"),
+                (ck, f"{n_multi}명",  "복합 위반 사용자",    "#f43f5e"),
                 (cv, f"{n_3plus}명",  "3개 이상 위반 유형",  "#f59e0b"),
                 (cd, top_dept,         "최다 발생 부서",       "#2563eb"),
             ]:
@@ -2023,56 +2249,52 @@ def view_analysis(month):
 
             st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
 
-            # 위반 유형 조합 분포 차트
-            c1, c2 = st.columns([1.1, 1])
-            with c1:
-                st.markdown("<div class='dash-card'>"
-                            "<div class='card-title'>"
-                            "<i class='fa-solid fa-users fa-sm'></i>  복합 위반 사용자 목록</div>",
-                            unsafe_allow_html=True)
-                st.dataframe(
-                    result[["이름","부서","역할","위반 유형 수","위반 유형","복합위험점수"]],
-                    width="stretch", hide_index=True,
-                    height=min(56 + len(result) * 35, 360),
-                    column_config={
-                        "이름":       st.column_config.TextColumn(width=80),
-                        "부서":       st.column_config.TextColumn(width=100),
-                        "역할":       st.column_config.TextColumn(width=80),
-                        "위반 유형 수": st.column_config.NumberColumn(width=70, format="%d개"),
-                        "위반 유형":  st.column_config.TextColumn(width=200),
-                        "복합위험점수": st.column_config.NumberColumn(width=80, format="%d점"),
-                    })
-                st.markdown("</div>", unsafe_allow_html=True)
+            # 복합 위반 사용자 목록 (풀 너비)
+            st.markdown("<div class='card-title' style='margin-bottom:0.5rem;'>"
+                        "<i class='fa-solid fa-users fa-sm'></i>  복합 위반 사용자 목록</div>",
+                        unsafe_allow_html=True)
+            st.dataframe(
+                result[["이름","부서","역할","위반 유형 수","위반 유형","복합위험점수"]],
+                width="stretch", hide_index=True,
+                height=min(56 + len(result) * 35, 360),
+                column_config={
+                    "이름":       st.column_config.TextColumn(width="small"),
+                    "부서":       st.column_config.TextColumn(width="small"),
+                    "역할":       st.column_config.TextColumn(width="small"),
+                    "위반 유형 수": st.column_config.NumberColumn(width="small", format="%d개"),
+                    "위반 유형":  st.column_config.TextColumn(width="large"),
+                    "복합위험점수": st.column_config.NumberColumn(width="small", format="%d점"),
+                })
 
-            with c2:
-                st.markdown("<div class='dash-card'>"
-                            "<div class='card-title'>"
-                            "<i class='fa-solid fa-chart-bar fa-sm'></i>  위반 유형 조합 분포</div>",
-                            unsafe_allow_html=True)
-                combo_cnt = result["위반 유형"].value_counts().head(8).reset_index()
-                combo_cnt.columns = ["조합","인원"]
-                combo_cnt = combo_cnt.sort_values("인원")
-                fig_combo = go.Figure(go.Bar(
-                    x=combo_cnt["인원"], y=combo_cnt["조합"],
-                    orientation="h",
-                    marker=dict(color="#2563eb", opacity=0.8, line=dict(width=0)),
-                    text=[f"{v}명" for v in combo_cnt["인원"]],
-                    textposition="outside",
-                    textfont=dict(size=11, color="#334155"),
-                    showlegend=False,
-                    hovertemplate="%{y}<br>%{x}명<extra></extra>",
-                ))
-                fig_combo.update_layout(
-                    height=300,
-                    margin=dict(l=10, r=50, t=10, b=10),
-                    plot_bgcolor="white", paper_bgcolor="rgba(0,0,0,0)",
-                    xaxis=dict(showgrid=True, gridcolor="#f1f5f9",
-                               tickfont=dict(size=10),
-                               range=[0, combo_cnt["인원"].max() * 1.3]),
-                    yaxis=dict(tickfont=dict(size=10, color="#1e293b"), automargin=True),
-                )
-                st.plotly_chart(fig_combo, width="stretch", config={"displayModeBar": False})
-                st.markdown("</div>", unsafe_allow_html=True)
+            st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
+
+            # 위반 유형 조합 분포 차트 (풀 너비)
+            st.markdown("<div class='card-title' style='margin-bottom:0.5rem;'>"
+                        "<i class='fa-solid fa-chart-bar fa-sm'></i>  위반 유형 조합 분포</div>",
+                        unsafe_allow_html=True)
+            combo_cnt = result["위반 유형"].value_counts().head(8).reset_index()
+            combo_cnt.columns = ["조합","인원"]
+            combo_cnt = combo_cnt.sort_values("인원")
+            fig_combo = go.Figure(go.Bar(
+                x=combo_cnt["인원"], y=combo_cnt["조합"],
+                orientation="h",
+                marker=dict(color="#60a5fa", opacity=0.85, line=dict(width=0)),
+                text=[f"{v}명" for v in combo_cnt["인원"]],
+                textposition="outside",
+                textfont=dict(size=11, color="#334155"),
+                showlegend=False,
+                hovertemplate="%{y}<br>%{x}명<extra></extra>",
+            ))
+            fig_combo.update_layout(
+                height=280,
+                margin=dict(l=10, r=50, t=10, b=10),
+                plot_bgcolor="white", paper_bgcolor="rgba(0,0,0,0)",
+                xaxis=dict(showgrid=True, gridcolor="#f1f5f9",
+                           tickfont=dict(size=10),
+                           range=[0, combo_cnt["인원"].max() * 1.3]),
+                yaxis=dict(tickfont=dict(size=11, color="#1e293b"), automargin=True),
+            )
+            st.plotly_chart(fig_combo, width="stretch", config={"displayModeBar": False})
 
 
 # ════════════════════════════════════════════════════════════════
@@ -2141,10 +2363,12 @@ def view_scan(month):
             st.session_state.scan_state = "idle"
             st.rerun()
     with info_col:
+        # 셀렉트박스 라벨 높이만큼 띄워 세로 정렬 맞춤
+        st.markdown("<div style='height:1.9rem'></div>", unsafe_allow_html=True)
         already = os.path.exists(
             os.path.join(DATA_DIR, f"violations_summary_{selected}.csv"))
         if already:
-            st.success(f"✅ {MONTH_LABELS[selected]} 점검 결과 있음 — 재검사 가능")
+            st.success(f"{MONTH_LABELS[selected]} 점검 결과 있음 — 재검사 가능")
         else:
             st.info(f"{MONTH_LABELS[selected]} 점검 결과 없음 — 검사를 실행해주세요")
 
@@ -2212,23 +2436,58 @@ def view_report(month):
         st.warning("점검 결과 없음 — '점검 실행' 메뉴에서 먼저 점검을 실행해주세요.")
         return
 
-    scores  = calc_scores(df, month=month)
-    c1,c2,c3,c4 = st.columns(4)
-    c1.metric("점검 규칙",  f"{len(df)}개")
-    c2.metric("위반 탐지",  f"{(df['yn_violation']=='Y').sum()}개")
-    c3.metric("기준일",     datetime.now().strftime("%Y.%m.%d"))
-    c4.metric("최저 점수",  f"{min(scores.values())}점")
+    scores   = calc_scores(df, month=month)
+    min_sc   = min(scores.values())
+    _, mg_col = grade(min_sc)
 
-    st.markdown("---")
+    # KPI 카드 (흰 배경)
+    kpis = [
+        (f"{len(df)}개", "점검 규칙", "#60a5fa"),
+        (f"{int((df['yn_violation']=='Y').sum())}개", "위반 탐지", "#fb7185"),
+        (datetime.now().strftime("%Y.%m.%d"), "기준일", "#22d3ee"),
+        (f"{min_sc}점", "최저 점수", mg_col),
+    ]
+    kc = st.columns(4)
+    for col, (val, lbl, color) in zip(kc, kpis):
+        with col:
+            st.markdown(
+                f"<div class='kpi-box' style='--accent:{color};'>"
+                f"<div class='val'>{val}</div>"
+                f"<div class='lbl'>{lbl}</div></div>",
+                unsafe_allow_html=True)
+
+    st.markdown("<div style='height:0.6rem'></div>", unsafe_allow_html=True)
+
+    # 보고서 종류 안내 (흰 카드)
     col1, col2 = st.columns(2)
     with col1:
-        st.markdown("##### Excel 보고서")
-        st.markdown("- 규칙별 위반 현황표\n- 도메인별 요약 집계\n- 심각도별 분류")
+        st.markdown(
+            "<div class='dash-card'>"
+            "<div style='font-size:0.95rem;font-weight:800;color:#0f172a;"
+            "margin-bottom:0.6rem;'>"
+            "<i class='fa-solid fa-file-excel' style='color:#22c55e;"
+            "margin-right:7px;'></i>Excel 보고서</div>"
+            "<ul style='margin:0;padding-left:1.1rem;color:#475569;"
+            "font-size:0.85rem;line-height:1.9;'>"
+            "<li>규칙별 위반 현황표</li>"
+            "<li>도메인별 요약 집계</li>"
+            "<li>심각도별 분류</li></ul></div>",
+            unsafe_allow_html=True)
     with col2:
-        st.markdown("##### Word 보고서")
-        st.markdown("- 표지 + 점검 총평\n- 도메인별 상세 분석\n- AI 기반 시정조치 권고")
+        st.markdown(
+            "<div class='dash-card'>"
+            "<div style='font-size:0.95rem;font-weight:800;color:#0f172a;"
+            "margin-bottom:0.6rem;'>"
+            "<i class='fa-solid fa-file-word' style='color:#2563eb;"
+            "margin-right:7px;'></i>Word 보고서</div>"
+            "<ul style='margin:0;padding-left:1.1rem;color:#475569;"
+            "font-size:0.85rem;line-height:1.9;'>"
+            "<li>표지 + 점검 총평</li>"
+            "<li>도메인별 상세 분석</li>"
+            "<li>AI 기반 시정조치 권고</li></ul></div>",
+            unsafe_allow_html=True)
 
-    st.markdown("---")
+    st.markdown("<div style='height:0.4rem'></div>", unsafe_allow_html=True)
     if st.button("보고서 생성", type="primary"):
         with st.spinner("보고서 생성 중... (약 30초)"):
             res = subprocess.run(
@@ -2261,21 +2520,23 @@ def view_report(month):
 # Main
 # ════════════════════════════════════════════════════════════════
 def main():
-    month, domains, sevs = render_sidebar()
+    month = render_topbar()
     view = st.session_state.view
 
     if view == "overview":
-        view_overview(month, domains, sevs)
+        view_overview(month)
     elif view == "access":
-        view_domain(month, "접근통제", sevs)
+        view_domain(month, "접근통제")
     elif view == "change":
-        view_domain(month, "변경관리", sevs)
+        view_domain(month, "변경관리")
     elif view == "ops":
-        view_domain(month, "운영통제", sevs)
+        view_domain(month, "운영통제")
     elif view == "analysis":
         view_analysis(month)
     elif view == "ai":
         view_ai(month)
+    elif view == "sanctions":
+        view_sanctions(month)
     elif view == "scan":
         view_scan(month)
     elif view == "report":
