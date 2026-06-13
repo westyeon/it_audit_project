@@ -76,10 +76,11 @@ div[data-testid="stStatusWidget"] { display: none !important; }
 [data-testid="stAppViewBadge"] { display: none !important; }
 a[href^="https://streamlit.io"] { display: none !important; }
 a[href*="streamlit.io/cloud"] { display: none !important; }
-/* Streamlit Cloud viewer badge (CSS module: _link_/_profileContainer_) */
+/* Streamlit Cloud viewer badge / Manage app 버튼 (CSS module 클래스) */
 [class^="_link_"], [class*=" _link_"] { display: none !important; }
 [class^="_profileContainer_"], [class*=" _profileContainer_"] { display: none !important; }
 [class^="_container_"][class*="_link_"] { display: none !important; }
+[class^="_terminalButton_"], [class*=" _terminalButton_"] { display: none !important; }
 #MainMenu { display: none !important; }
 footer { display: none !important; }
 .main .block-container { padding-top: 0.8rem !important; }
