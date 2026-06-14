@@ -5,5 +5,13 @@ secondaryBackgroundColor = "#ffffff"
 textColor = "#0f172a"
 font = "sans serif"
 
+[client]
+toolbarMode = "minimal"
+showErrorDetails = "none"
+
 [server]
 runOnSave = true
+headless = true
+
+[browser]
+gatherUsageStats = false
