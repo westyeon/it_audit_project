@@ -8,6 +8,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
+import streamlit.components.v1 as components
 from datetime import datetime
 
 # ── 경로 ──────────────────────────────────────────────────────
@@ -2531,7 +2532,48 @@ def view_report(month):
 # ════════════════════════════════════════════════════════════════
 # Main
 # ════════════════════════════════════════════════════════════════
+def hide_streamlit_chrome():
+    """Streamlit Cloud 호스팅 배지·Manage app 버튼을 JS로 제거 (시연용)."""
+    components.html("""
+    <script>
+    function clean(doc){
+      if(!doc) return;
+      try {
+        // Manage app 버튼 (텍스트로 식별)
+        doc.querySelectorAll('button').forEach(b=>{
+          if(b.textContent && b.textContent.trim()==='Manage app'){
+            const w = b.closest('div') || b; w.style.display='none';
+          }
+        });
+        // viewer badge (Streamlit 레드 #FF4B4B)
+        doc.querySelectorAll('a,div').forEach(el=>{
+          const bg = getComputedStyle(el).backgroundColor;
+          if(bg==='rgb(255, 75, 75)'){ el.style.display='none'; }
+        });
+        // CSS module 클래스 패턴
+        ['_terminalButton_','_profileContainer_','viewerBadge','_link_']
+          .forEach(t=>{
+            doc.querySelectorAll('[class*="'+t+'"]').forEach(el=>{
+              const bg = getComputedStyle(el).backgroundColor;
+              // 빨강 배지 또는 Manage 버튼만
+              if(t!=='_link_' || bg==='rgb(255, 75, 75)') el.style.display='none';
+            });
+          });
+      } catch(e){}
+    }
+    function run(){
+      clean(document);
+      try{ clean(window.parent.document); }catch(e){}
+      try{ clean(window.top.document); }catch(e){}
+    }
+    run();
+    setInterval(run, 600);
+    </script>
+    """, height=0)
+
+
 def main():
+    hide_streamlit_chrome()
     month = render_topbar()
     view = st.session_state.view
 
