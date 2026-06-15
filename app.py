@@ -1158,11 +1158,8 @@ def render_topbar():
         st.markdown("""
         <div style='display:flex;align-items:baseline;gap:10px;padding-top:4px;'>
           <div style='font-size:1.3rem;font-weight:900;color:#0f172a;letter-spacing:-0.03em;'>
-            <i class='fa-solid fa-shield-halved' style='color:#2563eb;margin-right:7px;'></i>IT<span style='color:#2563eb;'>감사</span> 시스템
+            <i class='fa-solid fa-shield-halved' style='color:#2563eb;margin-right:7px;'></i>IT <span style='color:#2563eb;'>사전통제</span> 점검 시스템
           </div>
-          <div style='font-size:0.68rem;color:#94a3b8;font-weight:500;
-                      letter-spacing:0.06em;text-transform:uppercase;'>
-              AI-Powered Audit Control</div>
         </div>
         """, unsafe_allow_html=True)
     with month_col:
