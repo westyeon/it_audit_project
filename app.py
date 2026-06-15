@@ -1478,8 +1478,7 @@ def view_ai(month):
 
     # ── 본문 영역 ──
     if running:
-        st.info("🔄  AI가 분석 중입니다. **다른 메뉴를 보셔도 됩니다.** "
-                "완료되면 이 화면에서 결과와 함께 알림이 표시됩니다.")
+        st.info("🔄  AI가 분석 중입니다.")
         st.caption("· 위 ‘새로고침하여 확인’ 버튼으로 완료 여부를 확인할 수 있습니다.")
     elif cached:
         try:
