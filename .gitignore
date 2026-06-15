@@ -26,3 +26,4 @@ env/
 .vscode/settings.json
 .idea/
 data/processed/report/
+data/processed/ai_cache/

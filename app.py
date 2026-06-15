@@ -2,7 +2,7 @@
 AI 기반 IT감사 사전 통제 점검 시스템 v4
 """
 
-import os, sys, subprocess, json, glob, re
+import os, sys, subprocess, json, glob, re, threading
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "src"))
 import pandas as pd
 import plotly.express as px
@@ -696,11 +696,12 @@ def verify_ai_response(response: str, df, scores, n_repeat, n_new) -> list[str]:
     return warnings
 
 
-def stream_ai_insights(context: str):
-    """Claude API 스트리밍 호출 — generator 반환"""
+def stream_ai_insights(context: str, api_key: str = None):
+    """Claude API 스트리밍 호출 — generator 반환.
+    api_key를 직접 받으면 그것을 사용(백그라운드 스레드용)."""
     try:
         import anthropic as _ant
-        client = _ant.Anthropic(api_key=_get_api_key())
+        client = _ant.Anthropic(api_key=api_key or _get_api_key())
 
         system_prompt = """당신은 금융권 IT 통제 점검 전문가로서 내부 통제 점검 보고서를 작성합니다.
 
@@ -749,6 +750,37 @@ def stream_ai_insights(context: str):
 
     except Exception as e:
         yield f"\n\n⚠ AI 분석 오류: {str(e)}"
+
+
+# ── AI 분석 백그라운드 실행 (파일 캐시) ────────────────────────────
+AI_CACHE_DIR = os.path.join(DATA_DIR, "ai_cache")
+
+def _ai_cache_path(month):   return os.path.join(AI_CACHE_DIR, f"ai_{month}.json")
+def _ai_running_path(month): return os.path.join(AI_CACHE_DIR, f"ai_{month}.running")
+
+def start_ai_background(context, month, api_key):
+    """백그라운드 스레드로 AI 분석 실행 → 결과를 파일로 저장."""
+    os.makedirs(AI_CACHE_DIR, exist_ok=True)
+    running = _ai_running_path(month)
+    open(running, "w").close()   # 진행중 마커
+
+    def _work():
+        try:
+            full = ""
+            for chunk in stream_ai_insights(context, api_key=api_key):
+                full += chunk
+            payload = {"text": full, "created": datetime.now().isoformat()}
+        except Exception as e:
+            payload = {"text": f"⚠ AI 분석 오류: {e}",
+                       "created": datetime.now().isoformat()}
+        try:
+            with open(_ai_cache_path(month), "w", encoding="utf-8") as f:
+                json.dump(payload, f, ensure_ascii=False)
+        finally:
+            if os.path.exists(running):
+                os.remove(running)
+
+    threading.Thread(target=_work, daemon=True).start()
 
 
 def render_ai_result(text, warnings=None):
@@ -1414,38 +1446,62 @@ def view_ai(month):
 
     st.markdown("<div style='height:0.6rem'></div>", unsafe_allow_html=True)
 
-    ai_key = f"ai_insights_{month}"
+    ai_key       = f"ai_insights_{month}"
+    cache_path   = _ai_cache_path(month)
+    running      = os.path.exists(_ai_running_path(month))
+    cached       = os.path.exists(cache_path)
+
+    # ── 버튼 영역 ──
     c1, c2 = st.columns([1, 5])
     with c1:
-        run_ai = st.button("분석 실행", type="primary",
-                           key=f"ai_run_{month}", use_container_width=True)
+        if running:
+            st.button("분석 중…", disabled=True, key=f"ai_running_{month}",
+                      use_container_width=True)
+            start = False
+        else:
+            start = st.button("다시 분석" if cached else "분석 실행",
+                              type="primary", key=f"ai_run_{month}",
+                              use_container_width=True)
     with c2:
-        if st.session_state.get(ai_key):
-            if st.button("다시 분석", key=f"ai_rerun_{month}"):
-                st.session_state[ai_key] = None
+        if running:
+            if st.button("새로고침하여 확인", key=f"ai_refresh_{month}"):
                 st.rerun()
 
-    if run_ai:
-        # 생성 과정은 숨기고 스피너만 → 완료 후 rerun → 요약 뷰
-        context   = build_audit_context(df, month, scores, n_repeat, n_new, n_resolved)
-        full_text = ""
-        with st.spinner("⏳  AI가 점검 결과를 분석하고 있습니다…"):
-            for chunk in stream_ai_insights(context):
-                full_text += chunk
-        st.session_state[ai_key] = full_text
-        st.session_state[f"{ai_key}_warnings"] = \
-            verify_ai_response(full_text, df, scores, n_repeat, n_new)
+    if start:
+        context = build_audit_context(df, month, scores, n_repeat, n_new, n_resolved)
+        api_key = _get_api_key()                # 메인 스레드에서 키 확보
+        if cached:
+            os.remove(cache_path)
+        st.session_state.pop(f"{ai_key}_notified", None)
+        start_ai_background(context, month, api_key)
         st.rerun()
 
-    elif st.session_state.get(ai_key):
-        render_ai_result(st.session_state[ai_key],
-                         st.session_state.get(f"{ai_key}_warnings", []))
+    # ── 본문 영역 ──
+    if running:
+        st.info("🔄  AI가 분석 중입니다. **다른 메뉴를 보셔도 됩니다.** "
+                "완료되면 이 화면에서 결과와 함께 알림이 표시됩니다.")
+        st.caption("· 위 ‘새로고침하여 확인’ 버튼으로 완료 여부를 확인할 수 있습니다.")
+    elif cached:
+        try:
+            with open(cache_path, encoding="utf-8") as f:
+                data = json.load(f)
+        except Exception:
+            data = None
+        if data:
+            # 완료 알림 (이 결과를 처음 볼 때 1회)
+            notif_key = f"{ai_key}_notified"
+            if st.session_state.get(notif_key) != data.get("created"):
+                st.toast("AI 분석이 완료되었습니다", icon="✅")
+                st.session_state[notif_key] = data.get("created")
+            warnings = verify_ai_response(data["text"], df, scores, n_repeat, n_new)
+            render_ai_result(data["text"], warnings)
     else:
         st.markdown(
             "<div class='dash-card'>"
             "<p style='color:#94a3b8;margin:0.5rem 0;'>"
             "위 <b>분석 실행</b> 버튼을 누르면 Claude가 이번 달 점검 결과를 "
-            "분석하여 핵심 요약과 세 가지 섹션으로 정리해드립니다.</p></div>",
+            "분석하여 핵심 요약과 세 가지 섹션으로 정리해드립니다. "
+            "분석 중에는 다른 메뉴를 자유롭게 사용하실 수 있습니다.</p></div>",
             unsafe_allow_html=True)
 
 
