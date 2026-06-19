@@ -1921,7 +1921,7 @@ def view_analysis(month):
                 unsafe_allow_html=True)
 
     tab1, tab2, tab3, tab4, tab5 = st.tabs(
-        ["부서별 위험도", "역할별 분석", "리스크 매트릭스", "법령 준수율", "복합 위험 사용자"])
+        ["부서별 위험도", "역할별 분석", "규칙별 위험도", "법령 준수율", "복합 위험 사용자"])
 
     # ── 탭1: 부서별 위험도 히트맵 ────────────────────────────────
     with tab1:
@@ -2093,6 +2093,13 @@ def view_analysis(month):
 
         grade_colors = {"Critical":"#8B0000","High":"#f43f5e",
                         "Medium":"#f59e0b","Low":"#3b82f6","이상없음":"#64748b"}
+        grade_labels = {
+            "Critical": "Critical  (8점 이상)",
+            "High":     "High  (5점 이상)",
+            "Medium":   "Medium  (2점 이상)",
+            "Low":      "Low  (2점 미만)",
+            "이상없음":  "이상없음  (0점)",
+        }
 
         c1, c2 = st.columns(2)
         with c1:
@@ -2102,7 +2109,8 @@ def view_analysis(month):
             gcnt = df_r.groupby("위험등급").size().reindex(grade_order, fill_value=0)
             gcnt_nz = gcnt[gcnt>0]
             fig_pie = go.Figure(go.Pie(
-                labels=gcnt_nz.index, values=gcnt_nz.values, hole=0.55,
+                labels=[grade_labels.get(g, g) for g in gcnt_nz.index],
+                values=gcnt_nz.values, hole=0.55,
                 marker_colors=[grade_colors[g] for g in gcnt_nz.index],
                 textinfo="label+value", textfont=dict(size=11),
             ))
